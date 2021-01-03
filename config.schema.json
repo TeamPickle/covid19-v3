@@ -1,0 +1,20 @@
+{
+  "title": "bot config",
+  "type": "object",
+  "required": [
+    "token"
+  ],
+  "properties": {
+    "token": {
+      "type": "string",
+      "description": "token of bot"
+    },
+    "owner": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "owner"
+    }
+  }
+}
