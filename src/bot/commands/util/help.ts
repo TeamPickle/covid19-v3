@@ -1,7 +1,7 @@
 import { DiscordAPIError, MessageEmbed } from 'discord.js';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
-import helpData from '@src/bot/data/util/help';
 import { stripIndents } from 'common-tags';
+import helpData from '@src/bot/data/util/help';
 
 export default class PingCommand extends Command {
   constructor(client: CommandoClient) {
