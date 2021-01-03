@@ -11,8 +11,5 @@ export default class PingCommand extends Command {
     });
   }
 
-  async run(msg: CommandoMessage) {
-    console.log('test');
-    return msg.reply(`${this.client.uptime}`);
-  }
+  run = async (msg: CommandoMessage) => msg.channel.send('hello!')
 }
