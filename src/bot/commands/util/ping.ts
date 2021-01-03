@@ -1,3 +1,4 @@
+import { oneLine } from 'common-tags';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 
 export default class PingCommand extends Command {
@@ -11,5 +12,10 @@ export default class PingCommand extends Command {
     });
   }
 
-  run = async (msg: CommandoMessage) => msg.channel.send(`${Date.now() - msg.createdTimestamp}ms`)
+  async run(msg: CommandoMessage) {
+    if (!this.client.owners?.includes(msg.author)) return null;
+    return msg.channel.send(oneLine`
+      ping: ${Date.now() - msg.createdTimestamp}ms.
+      uptime: ${Math.floor((this.client.uptime || 0) / 1000)}s`);
+  }
 }
