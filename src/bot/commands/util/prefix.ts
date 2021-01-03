@@ -21,6 +21,9 @@ export default class PingCommand extends Command {
   }
 
   run = async (msg: CommandoMessage, { prefix }: { prefix: string }) => {
+    if (msg.member.permissions.has('ADMINISTRATOR')) {
+      return msg.channel.send('서버관리자만 접두사를 변경할 수 있습니다.');
+    }
     if (!prefix) {
       return msg.channel.send(`명령어 사용법: \`${msg.guild.commandPrefix}접두사설정 !\``);
     }
