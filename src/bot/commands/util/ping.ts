@@ -11,5 +11,5 @@ export default class PingCommand extends Command {
     });
   }
 
-  run = async (msg: CommandoMessage) => msg.channel.send('hello!')
+  run = async (msg: CommandoMessage) => msg.channel.send(`${Date.now() - msg.createdTimestamp}ms`)
 }
