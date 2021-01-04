@@ -3,7 +3,7 @@ import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import { stripIndents } from 'common-tags';
 import helpData from '@src/bot/data/util/help';
 
-export default class PingCommand extends Command {
+export default class Command extends Command {
   constructor(client: CommandoClient) {
     super(client, {
       name: 'help',
