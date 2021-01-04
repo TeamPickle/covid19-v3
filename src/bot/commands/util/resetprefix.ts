@@ -1,6 +1,6 @@
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 
-export default class PingCommand extends Command {
+export default class ResetPrefixCommand extends Command {
   constructor(client: CommandoClient) {
     super(client, {
       name: 'resetprefix',
