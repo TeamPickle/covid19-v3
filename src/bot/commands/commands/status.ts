@@ -55,7 +55,7 @@ const parseNcov = async () => {
   };
 };
 
-export default class PingCommand extends Command {
+export default class StatusCommand extends Command {
   constructor(client: CommandoClient) {
     super(client, {
       name: 'status',
