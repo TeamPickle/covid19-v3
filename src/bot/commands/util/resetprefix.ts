@@ -13,7 +13,7 @@ export default class ResetPrefixCommand extends Command {
     });
   }
 
-  run = async (msg: CommandoMessage) => {
+  async run(msg: CommandoMessage) {
     if (msg.member.permissions.has('ADMINISTRATOR')) {
       return msg.channel.send('서버관리자만 접두사를 변경할 수 있습니다.');
     }

@@ -23,7 +23,7 @@ export default class HelpCommand extends Command {
     });
   }
 
-  run = async (msg: CommandoMessage, { detail }: { detail: string }) => {
+  async run(msg: CommandoMessage, { detail }: { detail: string }) {
     const prefix = msg.guild?.commandPrefix || this.client.commandPrefix;
     if (detail) {
       const commands = Object.keys(helpData.detail);
