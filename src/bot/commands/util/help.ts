@@ -50,7 +50,11 @@ export default class HelpCommand extends Command {
       )
       .addField(
         '설정 및 옵션',
-        (isDm ? helpData.dmSetting : helpData.serverSetting).replace(/{prefix}/g, prefix),
+        stripIndents`
+          ${helpData.globalSetting}
+
+          ${isDm ? helpData.dmSetting : helpData.serverSetting}
+        `.replace(/{prefix}/g, prefix),
       )
       .addField(
         '부가 명령어({prefix}도움 [명령어이름]으로 확인가능)'.replace(/{prefix}/g, prefix),
