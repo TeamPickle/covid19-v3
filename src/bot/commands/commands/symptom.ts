@@ -13,7 +13,7 @@ export default class SymptomCommand extends Command {
     });
   }
 
-  async run(msg: CommandoMessage) {
+  run = async (msg: CommandoMessage) => {
     const embed = new MessageEmbed();
     embed
       .setTitle('COVID-19(코로나19) 증상 안내')

@@ -66,7 +66,7 @@ export default class StatusCommand extends Command {
     });
   }
 
-  async run(msg: CommandoMessage) {
+  run = async (msg: CommandoMessage) => {
     const data = await parseNcov();
     if (!data) return null;
 

@@ -20,7 +20,7 @@ export default class PrefixCommand extends Command {
     });
   }
 
-  async run(msg: CommandoMessage, { prefix }: { prefix: string }) {
+  run = async (msg: CommandoMessage, { prefix }: { prefix: string }) => {
     if (msg.member.permissions.has('ADMINISTRATOR')) {
       return msg.channel.send('서버관리자만 접두사를 변경할 수 있습니다.');
     }

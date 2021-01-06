@@ -1,8 +1,8 @@
-import { oneLine, stripIndents } from 'common-tags';
+import { stripIndents } from 'common-tags';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
-import disasterData from '@src/bot/data/commands/disaster';
 import fetch from 'node-fetch';
 import { MessageEmbed } from 'discord.js';
+import disasterData from '@src/bot/data/commands/disaster';
 
 export default class DisasterCommand extends Command {
   constructor(client: CommandoClient) {
@@ -35,7 +35,7 @@ export default class DisasterCommand extends Command {
       : location;
 
     const disasterIndex = disasterData.disasterRegion.indexOf(u);
-    
+
     if (disasterIndex < 0) {
       return msg.channel.send(stripIndents`
         지원하지 않는 지역입니다. 다음 지역 중 하나로 다시 시도해주세요.
@@ -46,7 +46,7 @@ export default class DisasterCommand extends Command {
     const source: string = (await (await fetch(
       `https://m.search.naver.com/p/csearch/content/nqapirender.nhn?where=m&pkid=258&key=disasterAlert&u1=${
         disasterIndex ? disasterIndex.toString().padStart(2, '0') : ''
-      }`
+      }`,
     )).json()).current.html;
 
     const local = [...source.matchAll(/<em class="area_name">(.+?)<\/em>/g)];
@@ -54,7 +54,7 @@ export default class DisasterCommand extends Command {
     const distime = [...source.matchAll(/<time datetime="">(.+?)<\/time>/g)];
 
     if (local.length === 0 && con.length === 0) {
-      return msg.channel.send('재난문자를 불러올 수 없습니다.')
+      return msg.channel.send('재난문자를 불러올 수 없습니다.');
     }
 
     const embed = new MessageEmbed();
