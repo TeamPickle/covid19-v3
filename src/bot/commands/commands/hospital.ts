@@ -21,7 +21,6 @@ const searchHospital = async (city: string, gu: string) => {
 };
 
 const getEmbedByHospitalData = (data: Hospital[]) => {
-  console.log(data);
   const embed = new MessageEmbed();
   embed
     .setDescription(
