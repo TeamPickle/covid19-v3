@@ -35,7 +35,7 @@ const getEmbedByHospitalData = (data: Hospital[]) => {
   return embed;
 };
 
-export default class PingCommand extends Command {
+export default class HospitalCommand extends Command {
   constructor(client: CommandoClient) {
     super(client, {
       name: 'hospital',

@@ -68,7 +68,7 @@ const makeImage = async (data: ThenArg<ReturnType<typeof parseNcov>>) => {
   return canvas.toBuffer();
 };
 
-export default class PingCommand extends Command {
+export default class GraphicCommand extends Command {
   constructor(client: CommandoClient) {
     super(client, {
       name: 'graphic',
