@@ -70,8 +70,6 @@ export default class StatusCommand extends Command {
     const data = await parseNcov();
     if (!data) return null;
 
-    console.log(data);
-
     const embed = new MessageEmbed();
     embed
       .setTitle(`대한민국 코로나19 확진 정보 (${formatDate(data.date)} 기준)`)
