@@ -1,4 +1,6 @@
-import { Canvas, createCanvas, Image, loadImage } from 'canvas';
+import {
+  Canvas, createCanvas, Image, loadImage,
+} from 'canvas';
 import { MessageAttachment } from 'discord.js';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import fetch from 'node-fetch';
@@ -63,10 +65,10 @@ interface AddressBoundaryData {
 }
 
 /**
- * 
- * @param longDeg 
- * @param latDeg 
- * @param zoom 
+ * tile position from coordinate
+ * @param longDeg longitude
+ * @param latDeg latitude
+ * @param zoom zoom level
  * @returns [number, number] float
  */
 const deg2num = (longDeg: number, latDeg: number, zoom: number) => {
@@ -165,16 +167,18 @@ const getMapImages = async (
   numberOfYtile: number = 5,
   mapType: MapType = MapType.BASIC,
 ) => {
-  xtile = Math.floor(xtile - Math.floor(numberOfXtile / 2));
-  ytile = Math.floor(ytile - Math.floor(numberOfYtile / 2));
+  const alignedXtile = Math.floor(xtile - Math.floor(numberOfXtile / 2));
+  const alignedYtile = Math.floor(ytile - Math.floor(numberOfYtile / 2));
   return Promise.all(
     [...Array(numberOfYtile)].map((_, y) => (
       Promise.all(
-        [...Array(numberOfXtile)].map((_, x) => loadImage(`https://map.pstatic.net/nrb/styles/${mapType}/${mapVersion}/${zoom}/${x + xtile}/${y + ytile}.png?mt=bg.ol.lko`))
+        [...Array(numberOfXtile)].map((_, x) => loadImage(
+          `https://map.pstatic.net/nrb/styles/${mapType}/${mapVersion}/${zoom}/${x + alignedXtile}/${y + alignedYtile}.png?mt=bg.ol.lko`,
+        )),
       )
     )),
   );
-}
+};
 
 const getMapImage = (images: Image[][]) => {
   const imageSize = images[0][0].width;
@@ -193,16 +197,22 @@ const getMapImage = (images: Image[][]) => {
 
 const getAddressBoundary = async (addressId: string, zoom: number) => {
   const response = await fetch(
-    `https://map.naver.com/v5/api/wfs/stargate?output=geojson&targetcrs=epsg:4326&codetype=naver&request=codeToFeatures&level=${zoom}&keyword=${addressId}`
+    `https://map.naver.com/v5/api/wfs/stargate?output=geojson&targetcrs=epsg:4326&codetype=naver&request=codeToFeatures&level=${zoom}&keyword=${addressId}`,
   );
   const data = await response.json() as AddressBoundaryData;
   return data.features[0].geometry.type === 'MultiPolygon'
-    ? data.features[0].geometry.coordinates.map((e) => e[0]) : data.features[0].geometry.coordinates;
+    ? data.features[0].geometry.coordinates.map((e) => e[0])
+    : data.features[0].geometry.coordinates;
 };
 
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 
-const drawAddressBoundary = (canvas: Canvas, zoom: number, center: [number, number], coordss: ThenArg<ReturnType<typeof getAddressBoundary>>) => {
+const drawAddressBoundary = (
+  canvas: Canvas,
+  zoom: number,
+  center: [number, number],
+  coordss: ThenArg<ReturnType<typeof getAddressBoundary>>,
+) => {
   const ctx = canvas.getContext('2d');
   ctx.lineWidth = 2;
   ctx.strokeStyle = 'red';
@@ -239,9 +249,11 @@ export default class PingCommand extends Command {
   run = async (msg: CommandoMessage, { query }: { query: string }) => {
     const search = await searchMapByQuery(query);
     if (typeof search === 'string') return msg.channel.send(search);
+
     const mapData = await getMapData(search);
     if (mapData === null) return msg.channel.send('해당 지역을 찾을 수 없습니다.');
     if (mapData.boundary === null) return msg.channel.send('검색결과가 없습니다. 좀더 넓은 범위로 검색해주세요.');
+
     const boundary = parseBoundary(mapData.boundary);
     const [x, y] = getCenterOfCoordinate(boundary);
     const zoom = getZoomByBoundary(boundary, 5);
@@ -250,7 +262,7 @@ export default class PingCommand extends Command {
     const image = getMapImage(await getMapImages(xtile, ytile, zoom, mapVersion));
 
     if (mapData.id) {
-      drawAddressBoundary(image, zoom, [xtile, ytile], await getAddressBoundary(mapData.id, zoom))
+      drawAddressBoundary(image, zoom, [xtile, ytile], await getAddressBoundary(mapData.id, zoom));
     }
     return msg.channel.send(new MessageAttachment(image.toBuffer()));
   }
