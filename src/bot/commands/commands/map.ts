@@ -1,4 +1,4 @@
-import { createCanvas, loadImage } from 'canvas';
+import { Canvas, createCanvas, Image, loadImage } from 'canvas';
 import { MessageAttachment } from 'discord.js';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import fetch from 'node-fetch';
@@ -47,6 +47,28 @@ interface SearchData {
   };
 }
 
+interface AddressBoundaryData {
+  type: 'FeatureCollection';
+  features: {
+    type: 'Feature';
+    bbox: [number, number, number, number];
+    geometry: {
+      type: 'MultiPolygon';
+      coordinates: [number, number][][][];
+    } | {
+      type: 'Polygon';
+      coordinates: [number, number][][];
+    }
+  }[];
+}
+
+/**
+ * 
+ * @param longDeg 
+ * @param latDeg 
+ * @param zoom 
+ * @returns [number, number] float
+ */
 const deg2num = (longDeg: number, latDeg: number, zoom: number) => {
   if (zoom < 0 || zoom > 21) throw new Error('zoom must be grater than or equal to 0 and less than or equal to 21');
   const latRad = latDeg * (Math.PI / 180);
@@ -57,12 +79,17 @@ const deg2num = (longDeg: number, latDeg: number, zoom: number) => {
 };
 
 const deg2numByOffset = (
-  longDeg: number, latDeg: number, zoom: number, offset: number, imageSize: number = 256,
+  longDeg: number,
+  latDeg: number,
+  zoom: number,
+  center: [number, number] = [0, 0],
+  offset: number = 2,
+  imageSize: number = 256,
 ) => {
   const [xtile, ytile] = deg2num(longDeg, latDeg, zoom);
   return [
-    Math.floor((xtile - Math.floor(xtile) + offset) * imageSize),
-    Math.floor((ytile - Math.floor(ytile) + offset) * imageSize),
+    Math.floor((xtile - Math.floor(center[0]) + offset) * imageSize),
+    Math.floor((ytile - Math.floor(center[1]) + offset) * imageSize),
   ] as const;
 };
 
@@ -74,7 +101,7 @@ const parseBoundary = (boundary: Boundary): ParsedBoundary => ({
 });
 
 const getCenterOfCoordinate = (boundary: ParsedBoundary) => (
-  [(boundary.minX + boundary.minY) / 2, (boundary.minY + boundary.maxY) / 2] as const
+  [(boundary.minX + boundary.maxX) / 2, (boundary.minY + boundary.maxY) / 2] as const
 );
 
 const getZoomByBoundary = (boundary: ParsedBoundary, amountOfSideTile: number) => {
@@ -123,27 +150,31 @@ const getMapData = async (data: SearchData) => {
   return null;
 };
 
-const getMapImage = async (
+const getMapImages = async (
   xtile: number,
   ytile: number,
   zoom: number,
-  numberOfXtile: number,
-  numberOfYtile: number,
-  mapType: MapType,
+  numberOfXtile: number = 5,
+  numberOfYtile: number = 5,
+  mapType: MapType = MapType.BASIC,
   mapVersion: number = 1608790831,
 ) => {
-  const images = await Promise.all(
+  xtile = Math.floor(xtile - Math.floor(numberOfXtile / 2));
+  ytile = Math.floor(ytile - Math.floor(numberOfYtile / 2));
+  return Promise.all(
     [...Array(numberOfYtile)].map((_, y) => (
       Promise.all(
-        [...Array(numberOfXtile)].map((_, x) => loadImage(`https://map.pstatic.net/nrb/styles/${mapType}/${mapVersion}/${zoom}/${x + xtile}/${y + ytile}.png?mt=bg.ol.lko`)),
+        [...Array(numberOfXtile)].map((_, x) => loadImage(`https://map.pstatic.net/nrb/styles/${mapType}/${mapVersion}/${zoom}/${x + xtile}/${y + ytile}.png?mt=bg.ol.lko`))
       )
     )),
   );
+}
 
+const getMapImage = (images: Image[][]) => {
   const imageSize = images[0][0].width;
 
   const canvas = createCanvas(
-    imageSize * numberOfXtile, imageSize * numberOfYtile,
+    imageSize * images[0].length, imageSize * images.length,
   );
   const ctx = canvas.getContext('2d');
   images.forEach((y, yIndex) => {
@@ -152,6 +183,32 @@ const getMapImage = async (
     });
   });
   return canvas;
+};
+
+const getAddressBoundary = async (addressId: string, zoom: number) => {
+  const response = await fetch(
+    `https://map.naver.com/v5/api/wfs/stargate?output=geojson&targetcrs=epsg:4326&codetype=naver&request=codeToFeatures&level=${zoom}&keyword=${addressId}`
+  );
+  const data = await response.json() as AddressBoundaryData;
+  return data.features[0].geometry.type === 'MultiPolygon'
+    ? data.features[0].geometry.coordinates.map((e) => e[0]) : data.features[0].geometry.coordinates;
+};
+
+type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
+
+const drawAddressBoundary = (canvas: Canvas, zoom: number, center: [number, number], coordss: ThenArg<ReturnType<typeof getAddressBoundary>>) => {
+  const ctx = canvas.getContext('2d');
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = 'red';
+  coordss.forEach((coords) => {
+    ctx.beginPath();
+    coords.forEach((coord) => {
+      const [x, y] = deg2numByOffset(coord[0], coord[1], zoom, center);
+      ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.stroke();
+  });
 };
 
 export default class PingCommand extends Command {
@@ -183,7 +240,11 @@ export default class PingCommand extends Command {
     const [x, y] = getCenterOfCoordinate(boundary);
     const zoom = getZoomByBoundary(boundary, 5);
     const [xtile, ytile] = deg2num(x, y, zoom);
-    const image = await getMapImage(xtile, ytile, zoom, 5, 5, MapType.BASIC);
+    const image = getMapImage(await getMapImages(xtile, ytile, zoom));
+
+    if (mapData.id) {
+      drawAddressBoundary(image, zoom, [xtile, ytile], await getAddressBoundary(mapData.id, zoom))
+    }
     return msg.channel.send(new MessageAttachment(image.toBuffer()));
   }
 }
