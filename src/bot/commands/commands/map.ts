@@ -64,6 +64,25 @@ interface AddressBoundaryData {
   }[];
 }
 
+interface CoronaData {
+  data: {
+    _id: string;
+    region: string;
+    visitedDate: string;
+    latlng: string;
+    address: string;
+    placeEnglish: string;
+    place: string;
+    createDate: string;
+  }[];
+}
+
+interface ParsedCoronaData {
+  visitedDate: Date;
+  lat: number;
+  long: number;
+}
+
 /**
  * tile position from coordinate
  * @param longDeg longitude
@@ -227,6 +246,49 @@ const drawAddressBoundary = (
   });
 };
 
+const getCoronaData = async () => {
+  const response = await fetch('https://coroname.me/getdata');
+  return await response.json() as CoronaData;
+};
+
+const parseCoronaData = (data: CoronaData): ParsedCoronaData[] => (
+  data.data.map((e) => ({
+    visitedDate: new Date(e.visitedDate),
+    createDate: new Date(e.createDate),
+    lat: +e.latlng.split(', ')[0],
+    long: +e.latlng.split(', ')[1],
+  }))
+);
+
+const drawCoronaData = (
+  canvas: Canvas,
+  zoom: number,
+  center: [number, number],
+  data: ParsedCoronaData[],
+) => {
+  const ctx = canvas.getContext('2d');
+  data.forEach((e) => {
+    const delta = Math.floor(
+      (new Date().getTime() - e.visitedDate.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    const [x, y] = deg2numByOffset(e.long, e.lat, zoom, center);
+    ctx.beginPath();
+    ctx.fillStyle = 'black';
+    ctx.arc(x, y, zoom / 2 + 4, 0, 360);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.fillStyle = (
+      // eslint-disable-next-line no-nested-ternary
+      delta < 1 ? 'red'
+        : delta < 4 ? 'yellow' : 'green'
+    );
+    ctx.arc(x, y, zoom / 2 + 3, 0, 360);
+    ctx.fill();
+  });
+};
+
 export default class PingCommand extends Command {
   constructor(client: CommandoClient) {
     super(client, {
@@ -264,6 +326,8 @@ export default class PingCommand extends Command {
     if (mapData.id) {
       drawAddressBoundary(image, zoom, [xtile, ytile], await getAddressBoundary(mapData.id, zoom));
     }
+
+    drawCoronaData(image, zoom, [xtile, ytile], parseCoronaData(await getCoronaData()));
     return msg.channel.send(new MessageAttachment(image.toBuffer()));
   }
 }
