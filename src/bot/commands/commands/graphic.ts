@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 import { createCanvas, loadImage } from 'canvas';
 import { MessageAttachment } from 'discord.js';
 import graphicData, { locations } from '@src/bot/data/commands/graphic';
+import { ThenArg } from '@src/types/util';
 
 const graphicDataPath = path.join(__dirname, '../../data/commands/graphic/');
 
@@ -24,8 +25,6 @@ const parseNcov = async () => {
 
   return data as Record<typeof locations[number], typeof data[keyof typeof data]>;
 };
-
-type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 
 const makeImage = async (data: ThenArg<ReturnType<typeof parseNcov>>) => {
   const width = 1665;

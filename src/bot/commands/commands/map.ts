@@ -1,3 +1,4 @@
+import { ThenArg } from '@src/types/util';
 import {
   Canvas, createCanvas, Image, loadImage,
 } from 'canvas';
@@ -223,8 +224,6 @@ const getAddressBoundary = async (addressId: string, zoom: number) => {
     ? data.features[0].geometry.coordinates.map((e) => e[0])
     : data.features[0].geometry.coordinates;
 };
-
-type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 
 const drawAddressBoundary = (
   canvas: Canvas,
