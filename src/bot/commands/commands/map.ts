@@ -115,6 +115,12 @@ const getZoomByBoundary = (boundary: ParsedBoundary, amountOfSideTile: number) =
   return 5;
 };
 
+const getMapVersion = async () => {
+  const response = await fetch('https://map.pstatic.net/nrb/styles/basic.json?fmt=png');
+  const data = await response.json();
+  return data.version as string;
+};
+
 const searchMapByQuery = async (query: string) => {
   const response = await fetch(`https://map.naver.com/v5/api/search?caller=pcweb&query=${encodeURIComponent(query)}`);
   if (response.status !== 200) return '서버 에러가 발생했습니다.';
@@ -154,10 +160,10 @@ const getMapImages = async (
   xtile: number,
   ytile: number,
   zoom: number,
+  mapVersion: string,
   numberOfXtile: number = 5,
   numberOfYtile: number = 5,
   mapType: MapType = MapType.BASIC,
-  mapVersion: number = 1608790831,
 ) => {
   xtile = Math.floor(xtile - Math.floor(numberOfXtile / 2));
   ytile = Math.floor(ytile - Math.floor(numberOfYtile / 2));
@@ -240,7 +246,8 @@ export default class PingCommand extends Command {
     const [x, y] = getCenterOfCoordinate(boundary);
     const zoom = getZoomByBoundary(boundary, 5);
     const [xtile, ytile] = deg2num(x, y, zoom);
-    const image = getMapImage(await getMapImages(xtile, ytile, zoom));
+    const mapVersion = await getMapVersion();
+    const image = getMapImage(await getMapImages(xtile, ytile, zoom, mapVersion));
 
     if (mapData.id) {
       drawAddressBoundary(image, zoom, [xtile, ytile], await getAddressBoundary(mapData.id, zoom))
