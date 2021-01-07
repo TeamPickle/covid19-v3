@@ -1,6 +1,17 @@
 /* global NodeJS */
-import { token } from '@/config.json';
+import mongoose from 'mongoose';
+import { token, db } from '@/config.json';
 import bot from './bot';
+
+mongoose.connect(
+  db,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+  },
+);
 
 bot.login(token);
 
