@@ -6,8 +6,10 @@
   ],
   "properties": {
     "token": {
-      "type": "string",
-      "description": "token of bot"
+      "type": "string"
+    },
+    "db": {
+      "type": "string"
     },
     "owner": {
       "type": "array",
