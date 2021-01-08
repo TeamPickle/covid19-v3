@@ -288,7 +288,7 @@ const drawCoronaData = (
   });
 };
 
-export default class PingCommand extends Command {
+export default class MapCommand extends Command {
   constructor(client: CommandoClient) {
     super(client, {
       name: 'map',
