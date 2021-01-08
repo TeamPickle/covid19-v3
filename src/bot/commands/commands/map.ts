@@ -1,3 +1,4 @@
+import Locations from '@src/bot/models/locationMode';
 import { ThenArg } from '@src/types/util';
 import {
   Canvas, createCanvas, Image, loadImage,
@@ -83,6 +84,12 @@ interface ParsedCoronaData {
   lat: number;
   long: number;
 }
+
+const getLocation = async (userId: string, query: string) => {
+  if (query) return query;
+  const row = await Locations.findById(userId);
+  return row?.location || '';
+};
 
 /**
  * tile position from coordinate
@@ -307,7 +314,10 @@ export default class MapCommand extends Command {
     });
   }
 
-  run = async (msg: CommandoMessage, { query }: { query: string }) => {
+  run = async (msg: CommandoMessage, { query: _query }: { query: string }) => {
+    const query = await getLocation(msg.author.id, _query);
+    if (!query) return msg.channel.send('지역을 입력해주세요');
+
     const search = await searchMapByQuery(query);
     if (typeof search === 'string') return msg.channel.send(search);
 
