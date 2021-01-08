@@ -82,6 +82,7 @@ export default class GraphCommand extends Command {
           backgroundColor: 'gray',
           borderColor: 'gray',
           lineTension: 0.3,
+          yAxisID: 'sub',
         }],
       },
       options: {
@@ -98,6 +99,12 @@ export default class GraphCommand extends Command {
             offset: true,
           }],
           yAxes: [{
+            ticks: {
+              beginAtZero: true,
+            },
+          }, {
+            id: 'sub',
+            position: 'right',
             ticks: {
               beginAtZero: true,
             },
