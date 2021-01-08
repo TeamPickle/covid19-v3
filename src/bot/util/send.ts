@@ -1,5 +1,6 @@
 import { APIMessageContentResolvable, Collection, Guild, MessageAdditions, TextChannel } from 'discord.js';
 import { CommandoClient } from "discord.js-commando";
+import Autocalls from '../models/autocallModel';
 import Channels from '../models/channelModel';
 import Dnds from '../models/dndModel';
 
@@ -35,6 +36,12 @@ const send = async (client: CommandoClient, content: APIMessageContentResolvable
     if (!channel) return;
     channel.send(content);
   });
+  const autocalls = await Autocalls.find();
+  autocalls.forEach(({ _id }) => {
+    const user = client.users.cache.get(_id)
+    if (!user) return;
+    user.send(content);
+  })
 };
 
 export default send;
