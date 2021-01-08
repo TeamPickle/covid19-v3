@@ -13,6 +13,7 @@ export default class ChannelCommand extends Command {
       group: 'util',
       memberName: 'channel',
       guildOnly: true,
+      argsPromptLimit: 0,
       args: [{
         key: 'channel',
         type: 'channel',
