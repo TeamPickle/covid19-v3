@@ -1,3 +1,4 @@
+import Locations from '@src/bot/models/locationMode';
 import { MessageEmbed } from 'discord.js';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import fetch from 'node-fetch';
@@ -10,6 +11,14 @@ interface Hospital {
   name: string;
   number: string;
 }
+
+const getLocation = async (userId: string, city: string, gu: string) => {
+  if (city && gu) return [city, gu] as const;
+  const row = await Locations.findById(userId);
+  if (!row) return ['', ''] as const;
+  const [a, b] = row.location.split(' ');
+  return [a, b] as const;
+};
 
 const searchHospital = async (city: string, gu: string) => {
   const response = await fetch(encodeURI(`http://happycastle.club/hospital?city=${city}&gu=${gu}`));
@@ -61,11 +70,7 @@ export default class HospitalCommand extends Command {
   }
 
   async run(msg: CommandoMessage, { city, gu }: { city: string, gu: string }) {
-    if (!city || !gu) {
-      return msg.channel.send(`명령어 사용법 : \`${msg.guild?.commandPrefix || this.client.commandPrefix}병원 [시/도] [시/군/구]\``);
-    }
-
-    const hospitals = await searchHospital(city, gu);
+    const hospitals = await searchHospital(...await getLocation(msg.author.id, city, gu));
     if (typeof hospitals === 'string') return msg.channel.send(hospitals);
     return msg.channel.send(getEmbedByHospitalData(hospitals));
   }
