@@ -2,7 +2,7 @@ import { APIMessageContentResolvable, Collection, Guild, MessageAdditions, TextC
 import { CommandoClient } from "discord.js-commando";
 import Channels from '../models/channelModel';
 
-const getDefaultChannel = async (guild: Guild) => {
+export const getDefaultChannel = async (guild: Guild) => {
   const row = await Channels.findById(guild.id);
   if (row) {
     const channel = guild.channels.cache.get(row.channel);
