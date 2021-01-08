@@ -1,9 +1,11 @@
 import path from 'path';
 import { CommandoClient, FriendlyError } from 'discord.js-commando';
 import { oneLine } from 'common-tags';
+import { owner } from '@/config.json';
 
 const client = new CommandoClient({
   shards: 'auto',
+  owner,
 });
 
 client.on('error', console.error)
