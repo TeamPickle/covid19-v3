@@ -1,6 +1,7 @@
 import { APIMessageContentResolvable, Collection, Guild, MessageAdditions, TextChannel } from 'discord.js';
 import { CommandoClient } from "discord.js-commando";
 import Channels from '../models/channelModel';
+import Dnds from '../models/dndModel';
 
 export const getDefaultChannel = async (guild: Guild) => {
   const row = await Channels.findById(guild.id);
@@ -25,6 +26,11 @@ export const getDefaultChannel = async (guild: Guild) => {
 
 const send = async (client: CommandoClient, content: APIMessageContentResolvable | MessageAdditions) => {
   client.guilds.cache.forEach(async (guild) => {
+    const hour = new Date().getHours();
+    if (hour < 7 || hour >= 22) {
+      const dnd = await Dnds.findById(guild.id);
+      if (dnd) return;
+    }
     const channel = await getDefaultChannel(guild);
     if (!channel) return;
     channel.send(content);
