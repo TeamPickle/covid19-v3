@@ -4,6 +4,7 @@ import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import fetch from 'node-fetch';
 import Charts from '@src/bot/models/chartModel';
 import { ThenArg } from '@src/types/util';
+import Graphs from '@src/bot/models/graphModel';
 
 const parseNumber = (i: string) => +i.replace(/(,| )/g, '');
 const increase = (i: number) => (
@@ -100,6 +101,7 @@ export default class StatusCommand extends Command {
       });
     }
 
+    const graphUrl = (await Graphs.findOne({}, {}, { sort: { createdAt: -1 } }))?.url;
     const embed = new MessageEmbed();
     embed
       .setTitle(`대한민국 코로나19 확진 정보 (${formatDate(data.date)} 기준)`)
@@ -113,6 +115,10 @@ export default class StatusCommand extends Command {
       `)
       .setColor(0x006699)
       .setFooter('지자체에서 자체 집계한 자료와는 차이가 있을 수 있습니다.');
+
+    if (graphUrl) {
+      embed.setImage(graphUrl);
+    }
     return msg.channel.send(embed);
   }
 }
