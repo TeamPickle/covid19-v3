@@ -1,6 +1,7 @@
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import { MessageAttachment } from 'discord.js';
 import makeGraph from '@src/bot/util/graph';
+import Graphs from '@src/bot/models/graphModel';
 
 export default class GraphCommand extends Command {
   constructor(client: CommandoClient) {
@@ -14,6 +15,10 @@ export default class GraphCommand extends Command {
   }
 
   run = async (msg: CommandoMessage) => {
-    return msg.channel.send(new MessageAttachment(await makeGraph()));
+    const graphMessage = await msg.channel.send(new MessageAttachment(await makeGraph()));
+    Graphs.create({
+      url: graphMessage.url,
+    });
+    return null;
   }
 }
