@@ -80,7 +80,7 @@ export default class SendCommand extends Command {
     if (!confirm) return msg.reply('입력되지 않았습니다.');
     if (confirm !== 'ㅇ' && confirm.toLowerCase() !== 'y') return msg.reply('취소되었습니다.');
 
-    send(this.client, embed);
-    return null;
+    const { sended, toSendSize } = await send(this.client, embed);
+    return msg.channel.send(`${sended}/${toSendSize}`);
   }
 }

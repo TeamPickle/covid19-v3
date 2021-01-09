@@ -29,21 +29,32 @@ export const getDefaultChannel = async (guild: Guild) => {
 const send = async (
   client: CommandoClient, content: APIMessageContentResolvable | MessageAdditions,
 ) => {
+  let sended = 0;
   const hour = new Date().getHours();
-  client.guilds.cache.forEach(async (guild) => {
-    const setting = await Settings.findById(guild.id);
-    if (setting?.dnd || hour < 7 || hour >= 22) return;
-
-    const channel = await getDefaultChannel(guild);
-    if (!channel) return;
-    channel.send(content);
-  });
   const autocalls = await Autocalls.find();
-  autocalls.forEach(({ _id }) => {
-    const user = client.users.cache.get(_id);
-    if (!user) return;
-    user.send(content);
-  });
+  await Promise.all([
+    ...client.guilds.cache.map(async (guild) => {
+      const setting = await Settings.findById(guild.id);
+      if (setting?.dnd || hour < 7 || hour >= 22) return;
+
+      const channel = await getDefaultChannel(guild);
+      if (!channel) return;
+      await channel.send(content);
+      sended += 1;
+    }),
+    ...autocalls.map(async ({ _id }) => {
+      const user = client.users.cache.get(_id);
+      if (!user) return;
+      await user.send(content);
+      sended += 1;
+    }),
+  ]);
+
+  const toSendSize = client.guilds.cache.size + autocalls.length;
+  return {
+    toSendSize,
+    sended,
+  };
 };
 
 export default send;
