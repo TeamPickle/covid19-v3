@@ -75,6 +75,28 @@ const isSameWithLatest = async (data: ThenArg<ReturnType<typeof parseNcov>>) => 
   );
 };
 
+const makeEmbedWithData = async (data: NonNullable<ThenArg<ReturnType<typeof parseNcov>>>) => {
+  const graphUrl = (await Graphs.findOne({}, {}, { sort: { createdAt: -1 } }))?.url;
+  const embed = new MessageEmbed();
+  embed
+    .setTitle(`대한민국 코로나19 확진 정보 (${formatDate(data.date)} 기준)`)
+    .setDescription(stripIndents`
+      <:nujeok:687907310923677943> **확진자** : ${data.confirmedAcc}(${increase(data.confirmedDelta)}, 해외유입 +${data.overseaConfirmedDelta})
+      <:wanchi:687907312052076594> **완치** : ${data.releasedAcc}(${increase(data.releasedDelta)}) - ${Math.round((data.releasedAcc / data.confirmedAcc) * 100)}%
+      <:samang:687907312123510817> **사망** : ${data.deathAcc}(${increase(data.deathDelta)}) - ${Math.round((data.deathAcc / data.confirmedAcc) * 100)}%
+
+      <:chiryojung:711728328985411616> **치료중** : ${data.activeAcc}(${increase(data.activeDelta)})
+      <:geomsa:687907311301296146> **검사중** : ${data.testing}
+    `)
+    .setColor(0x006699)
+    .setFooter('지자체에서 자체 집계한 자료와는 차이가 있을 수 있습니다.');
+
+  if (graphUrl) {
+    embed.setImage(graphUrl);
+  }
+  return embed;
+};
+
 export default class StatusCommand extends Command {
   constructor(client: CommandoClient) {
     super(client, {
@@ -114,24 +136,6 @@ export default class StatusCommand extends Command {
       }
     }
 
-    const graphUrl = (await Graphs.findOne({}, {}, { sort: { createdAt: -1 } }))?.url;
-    const embed = new MessageEmbed();
-    embed
-      .setTitle(`대한민국 코로나19 확진 정보 (${formatDate(data.date)} 기준)`)
-      .setDescription(stripIndents`
-        <:nujeok:687907310923677943> **확진자** : ${data.confirmedAcc}(${increase(data.confirmedDelta)}, 해외유입 +${data.overseaConfirmedDelta})
-        <:wanchi:687907312052076594> **완치** : ${data.releasedAcc}(${increase(data.releasedDelta)}) - ${Math.round((data.releasedAcc / data.confirmedAcc) * 100)}%
-        <:samang:687907312123510817> **사망** : ${data.deathAcc}(${increase(data.deathDelta)}) - ${Math.round((data.deathAcc / data.confirmedAcc) * 100)}%
-
-        <:chiryojung:711728328985411616> **치료중** : ${data.activeAcc}(${increase(data.activeDelta)})
-        <:geomsa:687907311301296146> **검사중** : ${data.testing}
-      `)
-      .setColor(0x006699)
-      .setFooter('지자체에서 자체 집계한 자료와는 차이가 있을 수 있습니다.');
-
-    if (graphUrl) {
-      embed.setImage(graphUrl);
-    }
-    return msg.channel.send(embed);
+    return msg.channel.send(await makeEmbedWithData(data));
   }
 }
