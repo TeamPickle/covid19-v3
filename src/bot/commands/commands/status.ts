@@ -2,6 +2,8 @@ import { oneLine, stripIndents } from 'common-tags';
 import { MessageEmbed } from 'discord.js';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import fetch from 'node-fetch';
+import Charts from '@src/bot/models/chartModel';
+import { ThenArg } from '@src/types/util';
 
 const parseNumber = (i: string) => +i.replace(/(,| )/g, '');
 const increase = (i: number) => (
@@ -55,6 +57,21 @@ const parseNcov = async () => {
   };
 };
 
+const isSameWithLatest = async (data: ThenArg<ReturnType<typeof parseNcov>>) => {
+  const chart = await Charts.findOne({ }, { }, { sort: { date: -1 }});
+  if (!data || !chart) return false;
+  return (
+    data.date === chart.date
+    && data.activeAcc === chart.active
+    && data.confirmedAcc === chart.confirmedAcc
+    && data.deathAcc === chart.deathAcc
+    && data.releasedAcc === chart.releasedAcc
+    && data.confirmedDelta === chart.confirmed
+    && data.releasedDelta === chart.released
+    && data.deathDelta === chart.death
+  );
+};
+
 export default class StatusCommand extends Command {
   constructor(client: CommandoClient) {
     super(client, {
@@ -70,7 +87,7 @@ export default class StatusCommand extends Command {
     const data = await parseNcov();
     if (!data) return null;
 
-    console.log(data);
+    console.log(await isSameWithLatest(data));
 
     const embed = new MessageEmbed();
     embed
