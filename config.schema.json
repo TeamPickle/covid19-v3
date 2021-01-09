@@ -17,6 +17,12 @@
         "type": "string"
       },
       "description": "owner"
+    },
+    "logChannel": {
+      "type": "string"
+    },
+    "graphChannel": {
+      "type": "string"
     }
   }
 }
