@@ -32,23 +32,25 @@ const send = async (
   let sended = 0;
   const hour = new Date().getHours();
   const autocalls = await Autocalls.find();
-  await Promise.all([
-    ...client.guilds.cache.map(async (guild) => {
-      const setting = await Settings.findById(guild.id);
-      if (setting?.dnd && (hour < 7 || hour >= 22)) return;
 
-      const channel = await getDefaultChannel(guild);
-      if (!channel) return;
-      await channel.send(content);
-      sended += 1;
-    }),
-    ...autocalls.map(async ({ _id }) => {
-      const user = client.users.cache.get(_id);
-      if (!user) return;
-      await user.send(content);
-      sended += 1;
-    }),
-  ]);
+  await client.guilds.cache.reduce(async (acc, guild) => {
+    await acc;
+    const setting = await Settings.findById(guild.id);
+    if (setting?.dnd && (hour < 7 || hour >= 22)) return;
+
+    const channel = await getDefaultChannel(guild);
+    if (!channel) return;
+    await channel.send(content);
+    sended += 1;
+  }, Promise.resolve());
+
+  await autocalls.reduce(async (acc, { _id }) => {
+    await acc;
+    const user = client.users.cache.get(_id);
+    if (!user) return;
+    await user.send(content);
+    sended += 1;
+  }, Promise.resolve());
 
   const toSendSize = client.guilds.cache.size + autocalls.length;
   return {
