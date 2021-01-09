@@ -3,6 +3,7 @@ import { CommandoClient, CommandoGuild, FriendlyError } from 'discord.js-command
 import { oneLine } from 'common-tags';
 import { owner } from '@/config.json';
 import Settings from './models/settingsModel';
+import './tasks';
 
 const client = new CommandoClient({
   shards: 'auto',
