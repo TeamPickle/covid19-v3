@@ -46,9 +46,11 @@ export default class GraphCommand extends Command {
             meta.data.forEach((bar, index) => {
               if (!dataset.data) return;
               const data = dataset.data[index];
-              if (!data || typeof data !== 'number' || !dataset.borderColor) return;
-              ctx.fillStyle = dataset.borderColor.toString();
-              ctx.fillText(data.toFixed(), bar._model.x, bar._model.y - 15);
+              if (!data || typeof data !== 'number' || !dataset.backgroundColor) return;
+              ctx.fillStyle = dataset.backgroundColor.toString();
+              ctx.fillText(
+                data.toFixed(), bar._model.x + (datasetIndex - 1) * 20, bar._model.y - 10,
+              );
             });
           });
         },
@@ -65,21 +67,21 @@ export default class GraphCommand extends Command {
           label: '신규확진',
           data: data.map((e) => e.confirmed),
           fill: false,
-          backgroundColor: 'red',
+          backgroundColor: 'darkred',
           borderColor: 'red',
           lineTension: 0.3,
         }, {
           label: '격리해제',
           data: data.map((e) => e.released),
           fill: false,
-          backgroundColor: 'green',
+          backgroundColor: 'darkgreen',
           borderColor: 'green',
           lineTension: 0.3,
         }, {
           label: '사망',
           data: data.map((e) => e.death),
           fill: false,
-          backgroundColor: 'gray',
+          backgroundColor: 'darkslategray',
           borderColor: 'gray',
           lineTension: 0.3,
           yAxisID: 'sub',
