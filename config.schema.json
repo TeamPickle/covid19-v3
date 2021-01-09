@@ -2,7 +2,10 @@
   "title": "bot config",
   "type": "object",
   "required": [
-    "token"
+    "token",
+    "db",
+    "logChannelId",
+    "graphChannelId"
   ],
   "properties": {
     "token": {
@@ -18,10 +21,10 @@
       },
       "description": "owner"
     },
-    "logChannel": {
+    "logChannelId": {
       "type": "string"
     },
-    "graphChannel": {
+    "graphChannelId": {
       "type": "string"
     }
   }
