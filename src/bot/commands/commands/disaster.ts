@@ -3,7 +3,7 @@ import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import fetch from 'node-fetch';
 import { MessageEmbed } from 'discord.js';
 import disasterData from '@src/bot/data/commands/disaster';
-import Locations from '@src/bot/models/locationMode';
+import Locations from '@src/bot/models/locationModel';
 
 const getLocation = async (userId: string, location: string) => {
   if (location) return location;

@@ -1,6 +1,6 @@
 import { stripIndents } from 'common-tags';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
-import Locations from '@src/bot/models/locationMode';
+import Locations from '@src/bot/models/locationModel';
 
 export default class PositionCommand extends Command {
   constructor(client: CommandoClient) {

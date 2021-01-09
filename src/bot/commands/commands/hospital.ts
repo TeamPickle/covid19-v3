@@ -1,7 +1,7 @@
 import { MessageEmbed } from 'discord.js';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import fetch from 'node-fetch';
-import Locations from '@src/bot/models/locationMode';
+import Locations from '@src/bot/models/locationModel';
 
 interface Hospital {
   city: string;

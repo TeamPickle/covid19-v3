@@ -5,7 +5,7 @@ import { MessageAttachment } from 'discord.js';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import fetch from 'node-fetch';
 import { ThenArg } from '@src/types/util';
-import Locations from '@src/bot/models/locationMode';
+import Locations from '@src/bot/models/locationModel';
 
 enum MapType {
   SATELLITE ='satellite',
