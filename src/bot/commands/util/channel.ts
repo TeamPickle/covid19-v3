@@ -1,6 +1,6 @@
-import Channels from '@src/bot/models/channelModel';
+import Settings from '@src/bot/models/settingsModel';
 import { getDefaultChannel } from '@src/bot/util/send';
-import { oneLine, stripIndents } from 'common-tags';
+import { stripIndents } from 'common-tags';
 import { Channel } from 'discord.js';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 
@@ -37,7 +37,7 @@ export default class ChannelCommand extends Command {
     if (!(<Channel['type'][]>['text', 'news', 'store']).includes(channel.type)) {
       return msg.channel.send('채널이 잘못되었습니다.');
     }
-    await Channels.updateOne({ _id: msg.guild.id }, { channel: channel.id }, { upsert: true });
+    await Settings.updateOne({ _id: msg.guild.id }, { $set: { channel: channel.id }}, { upsert: true });
     return msg.channel.send(`${channel}(이)가 전체공지를 띄울 채널로 설정되었습니다.`);
   }
 }

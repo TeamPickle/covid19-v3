@@ -1,12 +1,12 @@
+import { settings } from 'cluster';
 import { APIMessageContentResolvable, Collection, Guild, MessageAdditions, TextChannel } from 'discord.js';
 import { CommandoClient } from "discord.js-commando";
 import Autocalls from '../models/autocallModel';
-import Channels from '../models/channelModel';
-import Dnds from '../models/dndModel';
+import Settings from '../models/settingsModel';
 
 export const getDefaultChannel = async (guild: Guild) => {
-  const row = await Channels.findById(guild.id);
-  if (row) {
+  const row = await Settings.findById(guild.id);
+  if (row?.channel) {
     const channel = guild.channels.cache.get(row.channel);
     if (channel) return channel as TextChannel;
   }
@@ -26,12 +26,11 @@ export const getDefaultChannel = async (guild: Guild) => {
 };
 
 const send = async (client: CommandoClient, content: APIMessageContentResolvable | MessageAdditions) => {
+  const hour = new Date().getHours();
   client.guilds.cache.forEach(async (guild) => {
-    const hour = new Date().getHours();
-    if (hour < 7 || hour >= 22) {
-      const dnd = await Dnds.findById(guild.id);
-      if (dnd) return;
-    }
+    const setting = await Settings.findById(guild.id);
+    if (setting?.dnd || hour < 7 || hour >= 22) return;
+
     const channel = await getDefaultChannel(guild);
     if (!channel) return;
     channel.send(content);
