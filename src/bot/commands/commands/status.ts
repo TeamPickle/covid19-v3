@@ -8,12 +8,9 @@ import { ThenArg } from '@src/types/util';
 import Graphs from '@src/bot/models/graphModel';
 import makeGraph from '@src/bot/util/graph';
 import disaster from '@src/bot/data/commands/disaster';
+import { parseBoard, format, increase } from '@src/bot/util/board';
 
 const parseNumber = (i: string) => +i.replace(/(,| )/g, '');
-const increase = (i: number) => (
-  // eslint-disable-next-line no-nested-ternary
-  i > 0 ? `▲${i}`
-    : i < 0 ? `▼${i}` : '-0');
 const formatDate = (date: Date) => oneLine`
   ${date.getFullYear()}년
   ${(date.getMonth() + 1).toString().padStart(2, '0')}월
@@ -168,11 +165,48 @@ export default class StatusCommand extends Command {
 
   async run(msg: CommandoMessage, { location }: { location: string }) {
     if (location) {
+      const data = await parseBoard();
+      if (data) {
+        // eslint-disable-next-line no-nested-ternary
+        const country = location === '오스트레일리아' ? '호주'
+          : location === '우리나라' || location === '한국' ? '대한민국' : location;
+        const cc = Object.entries(data.i18nAll.ko).find(([k, v]) => (
+          v === country && k.length === 2
+        ))?.[0];
+
+        if (cc) {
+          const status = data.statGlobalNow.find((stat) => stat.cc === cc);
+          if (status) {
+            const embed = new MessageEmbed();
+            embed
+              .setTitle(`${status.flag} 국가별 현황 - ${location}`)
+              .setDescription(stripIndents`
+                ${oneLine`
+                  <:nujeok:687907310923677943> 확진자 :
+                  ${format(status.confirmed)}명(${increase(status.confirmed - status.confirmed_prev)})
+                `}
+                ${oneLine`
+                  <:wanchi:687907312052076594> 완치 :
+                  ${format(status.released)}명(${increase(status.released - status.released_prev)}) -
+                  ${Math.round((status.released / status.confirmed) * 100)}%
+                `}
+                ${oneLine`
+                  <:samang:687907312123510817> 사망 :
+                  ${format(status.death)}명(${increase(status.death - status.death_prev)}) -
+                  ${Math.round((status.death / status.confirmed) * 100)}%
+                `}
+              `)
+              .setColor(0x00bfff);
+            return msg.channel.send(embed);
+          }
+        }
+      }
+
       const localData = await parseLocalData();
       if (!Object.keys(localData).includes(location)) {
         return msg.channel.send(stripIndents`
           지원하지 않는 지역입니다.
-          다음 중 하나를 입력해 주세요: \`${Object.keys(localData).join(' ')}\`
+          다음 중 하나를 입력해 주세요: \`${Object.keys(localData).join(' ')}\` 또는 \`국가 이름\`
         `);
       }
       return msg.channel.send(
