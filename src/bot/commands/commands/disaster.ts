@@ -38,9 +38,9 @@ export default class DisasterCommand extends Command {
         지역 목록 : \`${disasterData.disasterRegion.join(' ')}\`
       `);
     }
-    const u = Object.keys(disasterData.disasterAlias).includes(location)
+    const u = (Object.keys(disasterData.disasterAlias).includes(location)
       ? disasterData.disasterAlias[location as keyof typeof disasterData.disasterAlias]
-      : location;
+      : location) as typeof disasterData.disasterRegion[number];
 
     const disasterIndex = disasterData.disasterRegion.indexOf(u);
 
