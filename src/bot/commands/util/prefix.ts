@@ -1,3 +1,4 @@
+import Settings from '@src/bot/models/settingsModel';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 
 export default class PrefixCommand extends Command {
@@ -29,6 +30,7 @@ export default class PrefixCommand extends Command {
     }
     const { guild } = msg;
     guild.commandPrefix = prefix;
+    await Settings.updateOne({ _id: msg.guild.id }, { $set: { prefix } }, { upsert: true });
     return msg.channel.send(`${prefix}(으)로 접두사를 변경했습니다. \`${prefix}도움\`과 같이 사용하실 수 있습니다.`);
   }
 }
