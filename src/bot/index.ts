@@ -1,18 +1,30 @@
 import path from 'path';
-import { CommandoClient, FriendlyError } from 'discord.js-commando';
+import { CommandoClient, CommandoGuild, FriendlyError } from 'discord.js-commando';
 import { oneLine } from 'common-tags';
 import { owner } from '@/config.json';
+import Settings from './models/settingsModel';
 
 const client = new CommandoClient({
   shards: 'auto',
   owner,
 });
 
+const init = async () => {
+  const settings = await Settings.find();
+  settings.forEach((setting) => {
+    if (!setting.prefix) return;
+    const guild = client.guilds.cache.get(setting._id);
+    if (!guild) return;
+    (guild as CommandoGuild).commandPrefix = setting.prefix;
+  });
+};
+
 client.on('error', console.error)
   .on('warn', console.warn)
   .on('debug', console.log)
   .on('ready', () => {
     console.log(`Client ready; logged in as ${client.user?.username}#${client.user?.discriminator} (${client.user?.id})`);
+    init();
   })
   .on('disconnect', () => { console.warn('Disconnected!'); })
   .on('reconnecting', () => { console.warn('Reconnecting...'); })
