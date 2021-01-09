@@ -38,7 +38,7 @@ const parseNcov = async () => {
     parseNumber(i[1])
   ));
 
-  const parsedDate = new Date(date);
+  const parsedDate = new Date(`${date}Z`);
   parsedDate.setFullYear(new Date().getFullYear());
 
   return {
