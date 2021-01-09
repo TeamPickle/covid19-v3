@@ -2,7 +2,7 @@ import { Message, MessageEmbed } from 'discord.js';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import send from '@src/bot/util/send';
 
-type Mode = '속보' | '뉴스' | '해외' | '확진' | '사망';
+type Mode = '속보' | '뉴스' | '해외' | '확진' | '사망' | '전체공지';
 
 const modes: {
   [key in Mode]: {
@@ -29,6 +29,10 @@ const modes: {
   확진: {
     color: 0xff7c80,
     emoji: '<:nujeok:687907310923677943>',
+  },
+  전체공지: {
+    color: 0x555555,
+    emoji: '📢',
   },
 };
 
