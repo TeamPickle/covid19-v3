@@ -7,6 +7,7 @@ import Charts from '@src/bot/models/chartModel';
 import { ThenArg } from '@src/types/util';
 import Graphs from '@src/bot/models/graphModel';
 import makeGraph from '@src/bot/util/graph';
+import disaster from '@src/bot/data/commands/disaster';
 
 const parseNumber = (i: string) => +i.replace(/(,| )/g, '');
 const increase = (i: number) => (
@@ -97,6 +98,57 @@ const makeEmbedWithData = async (data: NonNullable<ThenArg<ReturnType<typeof par
   return embed;
 };
 
+const parseLocalData = async () => {
+  const data = await (await fetch('http://ncov.mohw.go.kr/bdBoardList_Real.do?brdGubun=13')).text();
+
+  return [...data.matchAll(
+    /<tr>.*row">(.*?)<.*?">([\d,]*).*?">([\d,]*).*?">([\d,]*).*?">([\d,]*).*?">([\d,]*).*?">([\d,]*).*?">([\d,]*).*?">([\d,.]*)/g,
+  )].map(([, location, ...match]) => (
+    [location, ...match.map(parseNumber)] as const
+  )).reduce((prev, curr) => ({
+    ...prev,
+    [curr[0] as keyof typeof prev]: {
+      confirmedDelta: curr[1],
+      overseaConfirmedDelta: curr[3],
+      confirmedAcc: curr[4],
+      activeAcc: curr[5],
+      releasedAcc: curr[6],
+      deathAcc: curr[7],
+      incidence: curr[8],
+    },
+  }), {} as {
+    [key in Exclude<typeof disaster.disasterRegion[number], '전국'> ]: {
+      confirmedDelta: number;
+      overseaConfirmedDelta: number;
+
+      confirmedAcc: number;
+      activeAcc: number;
+
+      releasedAcc: number;
+      deathAcc: number;
+
+      incidence: number;
+    }
+  });
+};
+
+type Value<T> = T[keyof T];
+
+const makeEmbedWithLocalData = (
+  location: string, data: Value<ThenArg<ReturnType<typeof parseLocalData>>>,
+) => {
+  const embed = new MessageEmbed();
+  embed
+    .setTitle(`시/도 확진자 수 조회 - ${location}`)
+    .setDescription(stripIndents`
+      <:nujeok:687907310923677943> **확진자** : ${data.confirmedAcc}명(${increase(data.confirmedDelta)})
+      <:chiryojung:711728328985411616> **치료중** : ${data.activeAcc}명
+      <:wanchi:687907312052076594> 완치 : ${data.releasedAcc}명
+      <:samang:687907312123510817> 사망 : ${data.deathAcc}명
+    `);
+  return embed;
+};
+
 export default class StatusCommand extends Command {
   constructor(client: CommandoClient) {
     super(client, {
@@ -105,10 +157,29 @@ export default class StatusCommand extends Command {
       description: 'status command',
       group: 'commands',
       memberName: 'status',
+      args: [{
+        key: 'location',
+        prompt: '',
+        type: 'string',
+        default: '',
+      }],
     });
   }
 
-  async run(msg: CommandoMessage) {
+  async run(msg: CommandoMessage, { location }: { location: string }) {
+    if (location) {
+      const localData = await parseLocalData();
+      if (!Object.keys(localData).includes(location)) {
+        return msg.channel.send(stripIndents`
+          지원하지 않는 지역입니다.
+          다음 중 하나를 입력해 주세요: \`${Object.keys(localData).join(' ')}\`
+        `);
+      }
+      return msg.channel.send(
+        makeEmbedWithLocalData(location, localData[location as keyof typeof localData]),
+      );
+    }
+
     const data = await parseNcov();
     if (!data) return null;
 
