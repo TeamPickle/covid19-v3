@@ -16,8 +16,8 @@ export default class GraphCommand extends Command {
 
   run = async (msg: CommandoMessage) => {
     const graphMessage = await msg.channel.send(new MessageAttachment(await makeGraph()));
-    Graphs.create({
-      url: graphMessage.url,
+    await Graphs.create({
+      url: graphMessage.attachments.first()?.url,
     });
     return null;
   }
