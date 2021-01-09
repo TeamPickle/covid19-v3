@@ -35,7 +35,7 @@ const send = async (
   await Promise.all([
     ...client.guilds.cache.map(async (guild) => {
       const setting = await Settings.findById(guild.id);
-      if (setting?.dnd || hour < 7 || hour >= 22) return;
+      if (setting?.dnd && (hour < 7 || hour >= 22)) return;
 
       const channel = await getDefaultChannel(guild);
       if (!channel) return;
