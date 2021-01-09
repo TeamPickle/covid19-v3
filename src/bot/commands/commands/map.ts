@@ -1,11 +1,11 @@
-import Locations from '@src/bot/models/locationMode';
-import { ThenArg } from '@src/types/util';
 import {
   Canvas, createCanvas, Image, loadImage,
 } from 'canvas';
 import { MessageAttachment } from 'discord.js';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import fetch from 'node-fetch';
+import { ThenArg } from '@src/types/util';
+import Locations from '@src/bot/models/locationMode';
 
 enum MapType {
   SATELLITE ='satellite',

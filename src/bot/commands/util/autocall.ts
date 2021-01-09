@@ -1,5 +1,5 @@
-import Autocalls  from '@src/bot/models/autocallModel';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
+import Autocalls from '@src/bot/models/autocallModel';
 
 export default class AutocallCommand extends Command {
   constructor(client: CommandoClient) {
@@ -20,6 +20,7 @@ export default class AutocallCommand extends Command {
 
   async run(msg: CommandoMessage, { response }: { response: string }) {
     if (msg.channel.type !== 'dm') return msg.channel.send('DM에서만 현황알림을 사용할 수 있습니다.');
+    // eslint-disable-next-line no-nested-ternary
     const enable = ['ㅇ', 'y', 'Y'].includes(response) ? true
       : ['ㄴ', 'n', 'N'].includes(response) ? false : undefined;
     if (enable === undefined) return msg.channel.send(`명령어 사용법 : ${this.client.commandPrefix}현황알림 [ㅇ/ㄴ]`);

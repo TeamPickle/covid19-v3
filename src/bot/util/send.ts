@@ -1,6 +1,7 @@
-import { settings } from 'cluster';
-import { APIMessageContentResolvable, Collection, Guild, MessageAdditions, TextChannel } from 'discord.js';
-import { CommandoClient } from "discord.js-commando";
+import {
+  APIMessageContentResolvable, Collection, Guild, MessageAdditions, TextChannel,
+} from 'discord.js';
+import { CommandoClient } from 'discord.js-commando';
 import Autocalls from '../models/autocallModel';
 import Settings from '../models/settingsModel';
 
@@ -25,7 +26,9 @@ export const getDefaultChannel = async (guild: Guild) => {
   );
 };
 
-const send = async (client: CommandoClient, content: APIMessageContentResolvable | MessageAdditions) => {
+const send = async (
+  client: CommandoClient, content: APIMessageContentResolvable | MessageAdditions,
+) => {
   const hour = new Date().getHours();
   client.guilds.cache.forEach(async (guild) => {
     const setting = await Settings.findById(guild.id);
@@ -37,10 +40,10 @@ const send = async (client: CommandoClient, content: APIMessageContentResolvable
   });
   const autocalls = await Autocalls.find();
   autocalls.forEach(({ _id }) => {
-    const user = client.users.cache.get(_id)
+    const user = client.users.cache.get(_id);
     if (!user) return;
     user.send(content);
-  })
+  });
 };
 
 export default send;

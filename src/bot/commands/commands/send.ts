@@ -1,6 +1,6 @@
-import send from '@src/bot/util/send';
 import { Message, MessageEmbed } from 'discord.js';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
+import send from '@src/bot/util/send';
 
 type Mode = '속보' | '뉴스' | '해외' | '확진' | '사망';
 
@@ -34,15 +34,19 @@ const modes: {
 
 const getContent = async (msg: CommandoMessage) => {
   await msg.reply('전송할 내용을 입력해주세요');
-  const response = await msg.channel.awaitMessages((m: Message) => m.author.id === msg.author.id, { max: 1, time: 3000 });
+  const response = await msg.channel.awaitMessages(
+    (m: Message) => m.author.id === msg.author.id, { max: 1, time: 3000 },
+  );
   return response.first()?.content.toString();
-}
+};
 
 const confirmContent = async (msg: CommandoMessage, embed: MessageEmbed) => {
   await msg.reply('위와 같이 공지 메시지를 전송하시겠습니까?[ㅇ/ㄴ]', embed);
-  const response = await msg.channel.awaitMessages((m: Message) => m.author.id === msg.author.id, { max: 1, time: 3000 });
+  const response = await msg.channel.awaitMessages(
+    (m: Message) => m.author.id === msg.author.id, { max: 1, time: 3000 },
+  );
   return response.first()?.content.toString();
-}
+};
 
 export default class SendCommand extends Command {
   constructor(client: CommandoClient) {
@@ -75,7 +79,7 @@ export default class SendCommand extends Command {
     const confirm = await confirmContent(msg, embed);
     if (!confirm) return msg.reply('입력되지 않았습니다.');
     if (confirm !== 'ㅇ' && confirm.toLowerCase() !== 'y') return msg.reply('취소되었습니다.');
-      
+
     send(this.client, embed);
     return null;
   }

@@ -1,7 +1,7 @@
-import Locations from '@src/bot/models/locationMode';
 import { MessageEmbed } from 'discord.js';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import fetch from 'node-fetch';
+import Locations from '@src/bot/models/locationMode';
 
 interface Hospital {
   city: string;
@@ -69,7 +69,7 @@ export default class HospitalCommand extends Command {
     });
   }
 
-  async run(msg: CommandoMessage, { city, gu }: { city: string, gu: string }) {
+  run = async (msg: CommandoMessage, { city, gu }: { city: string, gu: string }) => {
     const hospitals = await searchHospital(...await getLocation(msg.author.id, city, gu));
     if (typeof hospitals === 'string') return msg.channel.send(hospitals);
     return msg.channel.send(getEmbedByHospitalData(hospitals));

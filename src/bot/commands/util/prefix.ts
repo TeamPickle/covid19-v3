@@ -1,5 +1,5 @@
-import Settings from '@src/bot/models/settingsModel';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
+import Settings from '@src/bot/models/settingsModel';
 
 export default class PrefixCommand extends Command {
   constructor(client: CommandoClient) {
