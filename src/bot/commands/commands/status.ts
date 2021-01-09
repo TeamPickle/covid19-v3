@@ -184,7 +184,6 @@ export default class StatusCommand extends Command {
     if (!data) return null;
 
     if (!await isSameWithLatest(data)) {
-      console.log(data.date);
       await Charts.create({
         date: data.date,
         active: data.activeAcc,
