@@ -58,10 +58,10 @@ const parseNcov = async () => {
 };
 
 const isSameWithLatest = async (data: ThenArg<ReturnType<typeof parseNcov>>) => {
-  const chart = await Charts.findOne({ }, { }, { sort: { date: -1 }});
+  const chart = await Charts.findOne({ }, { }, { sort: { date: -1 } });
   if (!data || !chart) return false;
   return (
-    data.date === chart.date
+    data.date.getTime() === chart.date.getTime()
     && data.activeAcc === chart.active
     && data.confirmedAcc === chart.confirmedAcc
     && data.deathAcc === chart.deathAcc
