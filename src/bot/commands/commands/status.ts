@@ -87,7 +87,18 @@ export default class StatusCommand extends Command {
     const data = await parseNcov();
     if (!data) return null;
 
-    console.log(await isSameWithLatest(data));
+    if (!await isSameWithLatest(data)) {
+      await Charts.create({
+        date: data.date,
+        active: data.activeAcc,
+        confirmedAcc: data.confirmedAcc,
+        deathAcc: data.deathAcc,
+        releasedAcc: data.releasedAcc,
+        confirmed: data.confirmedDelta,
+        death: data.deathDelta,
+        released: data.releasedDelta,
+      });
+    }
 
     const embed = new MessageEmbed();
     embed
