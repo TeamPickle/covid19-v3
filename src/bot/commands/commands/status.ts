@@ -1,10 +1,12 @@
 import { oneLine, stripIndents } from 'common-tags';
-import { MessageEmbed } from 'discord.js';
+import { MessageAttachment, MessageEmbed, TextChannel } from 'discord.js';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import fetch from 'node-fetch';
+import { graphChannelId } from '@/config.json';
 import Charts from '@src/bot/models/chartModel';
 import { ThenArg } from '@src/types/util';
 import Graphs from '@src/bot/models/graphModel';
+import makeGraph from '@src/bot/util/graph';
 
 const parseNumber = (i: string) => +i.replace(/(,| )/g, '');
 const increase = (i: number) => (
@@ -84,11 +86,12 @@ export default class StatusCommand extends Command {
     });
   }
 
-  run = async (msg: CommandoMessage) => {
+  async run(msg: CommandoMessage) {
     const data = await parseNcov();
     if (!data) return null;
 
     if (!await isSameWithLatest(data)) {
+      console.log(data.date);
       await Charts.create({
         date: data.date,
         active: data.activeAcc,
@@ -99,6 +102,14 @@ export default class StatusCommand extends Command {
         death: data.deathDelta,
         released: data.releasedDelta,
       });
+
+      const graphChannel = this.client.channels.cache.get(graphChannelId);
+      if (graphChannel && graphChannel.type === 'text') {
+        const graphMessage = await (graphChannel as TextChannel).send(new MessageAttachment(await makeGraph()));
+        await Graphs.create({
+          url: graphMessage.attachments.first()?.url,
+        });
+      }
     }
 
     const graphUrl = (await Graphs.findOne({}, {}, { sort: { createdAt: -1 } }))?.url;
