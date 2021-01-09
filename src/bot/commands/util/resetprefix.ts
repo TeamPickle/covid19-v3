@@ -10,7 +10,7 @@ export default class ResetPrefixCommand extends Command {
       group: 'util',
       memberName: 'resetprefix',
       guildOnly: true,
-      patterns: [/!resetprefix/, /!접두사초기화/],
+      patterns: [/^!resetprefix$/, /^!접두사초기화$/],
     });
   }
 
