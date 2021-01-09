@@ -1,22 +1,16 @@
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
-import fetch from 'node-fetch';
 import { oneLine, stripIndents } from 'common-tags';
 import {
   Message, MessageEmbed, MessageReaction, User,
 } from 'discord.js';
 import { CoronaBoardData } from '@src/types/board';
+import parseBoard from '@src/bot/util/board';
 
 const format = (x: number) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 const increase = (i: number) => (
   // eslint-disable-next-line no-nested-ternary
   i > 0 ? `▲${format(i)}`
     : i < 0 ? `▼${format(i)}` : '-0');
-
-const parseBoard = async () => {
-  const data = (await (await fetch('https://coronaboard.kr')).text()).match(/jsonData = (.*?);<\/script/)?.[1];
-  if (!data) return null;
-  return JSON.parse(data) as CoronaBoardData;
-};
 
 const mainEmbed = (maxPage: number, data: CoronaBoardData) => {
   const embed = new MessageEmbed();
