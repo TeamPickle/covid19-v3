@@ -4,13 +4,7 @@ import {
   Message, MessageEmbed, MessageReaction, User,
 } from 'discord.js';
 import { CoronaBoardData } from '@src/types/board';
-import parseBoard from '@src/bot/util/board';
-
-const format = (x: number) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-const increase = (i: number) => (
-  // eslint-disable-next-line no-nested-ternary
-  i > 0 ? `▲${format(i)}`
-    : i < 0 ? `▼${format(i)}` : '-0');
+import { parseBoard, format, increase } from '@src/bot/util/board';
 
 const mainEmbed = (maxPage: number, data: CoronaBoardData) => {
   const embed = new MessageEmbed();
