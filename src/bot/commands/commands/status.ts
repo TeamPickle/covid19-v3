@@ -105,7 +105,9 @@ export default class StatusCommand extends Command {
 
       const graphChannel = this.client.channels.cache.get(graphChannelId);
       if (graphChannel && graphChannel.type === 'text') {
-        const graphMessage = await (graphChannel as TextChannel).send(new MessageAttachment(await makeGraph()));
+        const graphMessage = await (graphChannel as TextChannel).send(
+          new MessageAttachment(await makeGraph()),
+        );
         await Graphs.create({
           url: graphMessage.attachments.first()?.url,
         });
