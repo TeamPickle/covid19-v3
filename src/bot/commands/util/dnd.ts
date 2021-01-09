@@ -1,4 +1,4 @@
-import Dnds from '@src/bot/models/dndModel';
+import Settings from '@src/bot/models/settingsModel';
 import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 
 export default class DndCommand extends Command {
@@ -25,10 +25,10 @@ export default class DndCommand extends Command {
       : ['ㄴ', 'n', 'N'].includes(response) ? false : undefined;
     if (enable === undefined) return msg.channel.send(`명령어 사용법 : ${msg.guild.commandPrefix}방해금지 [ㅇ/ㄴ]`);
     if (enable) {
-      await new Dnds({ _id: msg.guild.id }).save();
+      await Settings.updateOne({ _id: msg.guild.id }, { dnd: true }, { upsert: false });
       return msg.channel.send('방해금지 모드가 설정되었습니다.');
     }
-    await Dnds.findByIdAndRemove(msg.guild.id);
+    await Settings.updateOne({ _id: msg.guild.id }, { dnd: false }, { upsert: false });
     return msg.channel.send('방해금지 모드가 해제되었습니다.');
   }
 }
