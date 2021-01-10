@@ -40,16 +40,26 @@ const send = async (
 
     const channel = await getDefaultChannel(guild);
     if (!channel) return;
-    await channel.send(content);
-    sended += 1;
+    try {
+      await channel.send(content);
+      sended += 1;
+    } catch (e) {
+      console.error(e);
+      console.error(guild.id, channel.id);
+    }
   }, Promise.resolve());
 
   await autocalls.reduce(async (acc, { _id }) => {
     await acc;
     const user = client.users.cache.get(_id);
     if (!user) return;
-    await user.send(content);
-    sended += 1;
+    try {
+      await user.send(content);
+      sended += 1;
+    } catch (e) {
+      console.error(e);
+      console.error(user.id);
+    }
   }, Promise.resolve());
 
   const toSendSize = client.guilds.cache.size + autocalls.length;
