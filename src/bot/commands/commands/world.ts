@@ -93,7 +93,8 @@ export default class WorldCommand extends Command {
     if (!data) return msg.channel.send('정보를 가져올 수 없습니다.');
     const client = msg.client.user;
     if (!client) return msg.channel.send('권한을 가져올 수 없습니다.');
-    if (!msg.guild.members.cache.get(client.id)?.hasPermission([
+    if (msg.channel.type === 'text'
+      && !msg.channel.permissionsFor(client)?.has([
       'ADD_REACTIONS', 'VIEW_CHANNEL', 'MANAGE_MESSAGES', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS',
     ])) {
       return msg.channel.send(oneLine`
