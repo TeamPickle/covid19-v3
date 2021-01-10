@@ -94,7 +94,7 @@ export default class WorldCommand extends Command {
     const client = msg.client.user;
     if (!client) return msg.channel.send('권한을 가져올 수 없습니다.');
     if (!msg.guild.members.cache.get(client.id)?.hasPermission([
-      'MANAGE_MESSAGES', 'MANAGE_EMOJIS', 'ADD_REACTIONS',
+      'ADD_REACTIONS', 'VIEW_CHANNEL', 'MANAGE_MESSAGES', 'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS',
     ])) {
       return msg.channel.send(oneLine`
         필요한 권한(메시지 관리, 이모티콘 관리, 반응 추가하기)이 할당되지 않아
