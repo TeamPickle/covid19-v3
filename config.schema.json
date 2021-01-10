@@ -5,7 +5,9 @@
     "token",
     "db",
     "logChannelId",
-    "graphChannelId"
+    "graphChannelId",
+    "port",
+    "corsAllow"
   ],
   "properties": {
     "token": {
@@ -26,6 +28,15 @@
     },
     "graphChannelId": {
       "type": "string"
+    },
+    "port": {
+      "type": "number"
+    },
+    "corsAllow": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   }
 }
