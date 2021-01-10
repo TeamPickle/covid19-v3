@@ -9,6 +9,7 @@ import Graphs from '@src/bot/models/graphModel';
 import makeGraph from '@src/bot/util/graph';
 import disaster from '@src/bot/data/commands/disaster';
 import { parseBoard, format, increase } from '@src/bot/util/board';
+import send from '@src/bot/util/send';
 
 const parseNumber = (i: string) => +i.replace(/(,| )/g, '');
 const formatDate = (date: Date) => oneLine`
@@ -236,6 +237,11 @@ export default class StatusCommand extends Command {
         );
         await Graphs.create({
           url: graphMessage.attachments.first()?.url,
+        });
+        const embed = await makeEmbedWithData(data);
+        embed.setTitle('🔄 현황 변경 안내')
+        send(this.client, embed).then(({ toSendSize, sended }) => {
+          (graphChannel as TextChannel).send(`${sended}/${toSendSize}`);
         });
       }
     }
