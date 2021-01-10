@@ -6,7 +6,6 @@
     "db",
     "logChannelId",
     "graphChannelId",
-    "port",
     "corsAllow"
   ],
   "properties": {
