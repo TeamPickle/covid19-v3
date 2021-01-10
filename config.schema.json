@@ -29,9 +29,6 @@
     "graphChannelId": {
       "type": "string"
     },
-    "port": {
-      "type": "number"
-    },
     "corsAllow": {
       "type": "array",
       "items": {

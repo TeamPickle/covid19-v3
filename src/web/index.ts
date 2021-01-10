@@ -1,7 +1,11 @@
 import http from 'http';
-import { port } from '@/config.json';
 import app from './app';
 
-http.createServer(app).listen(port, () => {
-  console.log('WEB: HTTP READY');
-});
+const createServer = () => {
+  http.createServer(app).listen(45313, () => {
+    console.log('WEB: HTTP READY');
+  });
+};
+
+export default createServer;
+

@@ -5,6 +5,7 @@ import { owner } from '@/config.json';
 import Settings from './models/settingsModel';
 import './tasks';
 import startTask from './tasks';
+import createServer from '@src/web';
 
 const client = new CommandoClient({
   shards: 'auto',
@@ -28,6 +29,8 @@ client.on('error', console.error)
     console.log(`Client ready; logged in as ${client.user?.username}#${client.user?.discriminator} (${client.user?.id})`);
     init();
     startTask();
+    createServer();
+    
   })
   .on('disconnect', () => { console.warn('Disconnected!'); })
   .on('reconnecting', () => { console.warn('Reconnecting...'); })
