@@ -9,7 +9,13 @@ export const getDefaultChannel = async (guild: Guild) => {
   const row = await Settings.findById(guild.id);
   if (row?.channel) {
     const channel = guild.channels.cache.get(row.channel);
-    if (channel) return channel as TextChannel;
+    if (
+      channel
+      && guild.client.user
+      && channel.permissionsFor(guild.client.user)?.has(['VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS', 'USE_EXTERNAL_EMOJIS'])
+    ) {
+      return channel as TextChannel;
+    }
   }
 
   return (
@@ -18,8 +24,7 @@ export const getDefaultChannel = async (guild: Guild) => {
       .filter((channel) => (
         (<typeof channel.type[]>['text', 'news', 'store']).includes(channel.type)
           && !!guild.client.user
-          && !!channel.permissionsFor(guild.client.user)?.has('VIEW_CHANNEL')
-          && !!channel.permissionsFor(guild.client.user)?.has('SEND_MESSAGES')
+          && !!channel.permissionsFor(guild.client.user)?.has(['VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS', 'USE_EXTERNAL_EMOJIS'])
       )) as Collection<string, TextChannel>)
       .sort((a, b) => a.rawPosition - b.rawPosition)
       .first()
