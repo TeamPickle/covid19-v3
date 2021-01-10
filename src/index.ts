@@ -2,6 +2,7 @@
 import mongoose from 'mongoose';
 import { token, db } from '@/config.json';
 import bot from './bot';
+import './web';
 
 mongoose.connect(
   db,
