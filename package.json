@@ -37,6 +37,7 @@
     "discord.js": "^12.5.1",
     "discord.js-commando": "discordjs/Commando",
     "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
     "moment": "^2.29.1",
     "mongoose": "^5.11.10",
     "morgan": "^1.10.0",
