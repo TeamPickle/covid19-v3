@@ -314,7 +314,14 @@ export default class MapCommand extends Command {
     });
   }
 
-  run = async (msg: CommandoMessage, { query: _query }: { query: string }) => {
+  async run(msg: CommandoMessage, { query: _query }: { query: string }) {
+    if (msg.channel.type === 'text'
+      && this.client.user
+      && !msg.channel.permissionsFor(this.client.user)?.has(['SEND_MESSAGES', 'ATTACH_FILES'])
+    ) {
+      return msg.channel.send('권한이 없어 명령을 수행할 수 없습니다.');
+    }
+
     const query = await getLocation(msg.author.id, _query);
     if (!query) return msg.channel.send('지역을 입력해주세요');
 
