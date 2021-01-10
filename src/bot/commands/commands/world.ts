@@ -97,7 +97,7 @@ export default class WorldCommand extends Command {
       'MANAGE_MESSAGES', 'MANAGE_EMOJIS', 'ADD_REACTIONS',
     ])) {
       return msg.channel.send(oneLine`
-        필요한 권한(미시지 관리, 이모티콘 관리, 반응 추가하기)이 할당되지 않아
+        필요한 권한(메시지 관리, 이모티콘 관리, 반응 추가하기)이 할당되지 않아
         기능이 제대로 작동하지 않습니다. 권한을 할당해주세요.
       `);
     }
