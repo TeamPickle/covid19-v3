@@ -7,6 +7,13 @@ COPY ./yarn.lock ./
 RUN \
   apk update && \
   apk add --no-cache \
+    udev \
+    ttf-freefont && \
+  mkdir -p /usr/share/fonts/nanumfont && \
+  wget http://cdn.naver.com/naver/NanumFont/fontfiles/NanumFont_TTF_ALL.zip && \
+  unzip NanumFont_TTF_ALL.zip -d /usr/share/fonts/nanumfont && \
+  fc-cache -f -v && \
+  apk add --no-cache \
     python \
     g++ \
     build-base \
