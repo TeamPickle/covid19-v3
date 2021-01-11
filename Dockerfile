@@ -30,4 +30,7 @@ RUN \
   yarn install
 COPY . .
 
+ENV LANG=ko_KR.UTF-8 \
+    LANGUAGE=ko_KR.UTF-8
+
 CMD ["yarn", "start"]
