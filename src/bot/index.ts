@@ -10,6 +10,7 @@ import createServer from '@src/web';
 const client = new CommandoClient({
   shards: 'auto',
   owner,
+  messageCacheMaxSize: 0,
 });
 
 const init = async () => {
