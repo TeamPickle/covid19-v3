@@ -70,7 +70,6 @@ const drawGraph = (data: ThenArg<ReturnType<typeof getGraphData>>) => {
         backgroundColor: 'darkslategray',
         borderColor: 'gray',
         lineTension: 0.3,
-        yAxisID: 'sub',
       }],
     },
     options: {
@@ -87,12 +86,6 @@ const drawGraph = (data: ThenArg<ReturnType<typeof getGraphData>>) => {
           offset: true,
         }],
         yAxes: [{
-          ticks: {
-            beginAtZero: true,
-          },
-        }, {
-          id: 'sub',
-          position: 'right',
           ticks: {
             beginAtZero: true,
           },
