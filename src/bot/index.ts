@@ -9,7 +9,8 @@ import startTask from './tasks';
 const client = new CommandoClient({
   shards: 'auto',
   owner,
-  messageCacheMaxSize: 0,
+  messageCacheMaxSize: 10,
+  messageCacheLifetime: 60,
 });
 
 const init = async () => {
