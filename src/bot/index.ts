@@ -2,10 +2,9 @@ import path from 'path';
 import { CommandoClient, CommandoGuild, FriendlyError } from 'discord.js-commando';
 import { oneLine } from 'common-tags';
 import { owner } from '@/config.json';
-import Settings from './models/settingsModel';
-import './tasks';
-import startTask from './tasks';
 import createServer from '@src/web';
+import Settings from './models/settingsModel';
+import startTask from './tasks';
 
 const client = new CommandoClient({
   shards: 'auto',
