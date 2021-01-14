@@ -39,7 +39,7 @@ const modes: {
 const getContent = async (msg: CommandoMessage) => {
   await msg.reply('전송할 내용을 입력해주세요');
   const response = await msg.channel.awaitMessages(
-    (m: Message) => m.author.id === msg.author.id, { max: 1, time: 3000 },
+    (m: Message) => m.author.id === msg.author.id, { max: 1, time: 60 * 1000 },
   );
   return response.first()?.content.toString();
 };
@@ -47,7 +47,7 @@ const getContent = async (msg: CommandoMessage) => {
 const confirmContent = async (msg: CommandoMessage, embed: MessageEmbed) => {
   await msg.reply('위와 같이 공지 메시지를 전송하시겠습니까?[ㅇ/ㄴ]', embed);
   const response = await msg.channel.awaitMessages(
-    (m: Message) => m.author.id === msg.author.id, { max: 1, time: 3000 },
+    (m: Message) => m.author.id === msg.author.id, { max: 1, time: 60 * 1000 },
   );
   return response.first()?.content.toString();
 };
