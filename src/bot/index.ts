@@ -1,7 +1,7 @@
 import path from 'path';
 import { CommandoClient, CommandoGuild, FriendlyError } from 'discord.js-commando';
-import { oneLine } from 'common-tags';
-import { owner } from '@/config.json';
+import { oneLine, stripIndents } from 'common-tags';
+import { owner, logChannelId } from '@/config.json';
 import createServer from '@src/web';
 import Settings from './models/settingsModel';
 import startTask from './tasks';
@@ -31,13 +31,25 @@ client.on('error', console.error)
     init();
     startTask();
     createServer();
-    
   })
   .on('disconnect', () => { console.warn('Disconnected!'); })
   .on('reconnecting', () => { console.warn('Reconnecting...'); })
-  .on('commandError', (cmd, err) => {
+  .on('commandError', (cmd, err, msg) => {
     if (err instanceof FriendlyError) return;
     console.error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err);
+    client.channels.fetch(logChannelId)
+      .then((logChannel) => {
+        if (!logChannel.isText()) return;
+
+        logChannel.send(stripIndents`
+        content: ${msg.content}
+        requester: ${msg.author.tag}
+
+        \`\`\`
+          ${err.stack}
+        \`\`\`
+      `, { split: { append: '```', prepend: '```' } });
+      });
   })
   .on('commandBlock', (msg, reason) => {
     console.log(oneLine`
