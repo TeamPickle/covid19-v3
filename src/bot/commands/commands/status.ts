@@ -239,7 +239,7 @@ export default class StatusCommand extends Command {
           url: graphMessage.attachments.first()?.url,
         });
         const embed = await makeEmbedWithData(data);
-        embed.setTitle('🔄 현황 변경 안내')
+        embed.setTitle('🔄 현황 변경 안내');
         send(this.client, embed).then(({ toSendSize, sended }) => {
           (graphChannel as TextChannel).send(`${sended}/${toSendSize}`);
         });
