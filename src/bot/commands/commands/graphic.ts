@@ -58,16 +58,17 @@ const makeImage = async (data: ThenArg<ReturnType<typeof parseNcov>>) => {
   locations.slice(1).forEach((v) => {
     context.font = 'bold 48px NotoSans';
     const measure = context.measureText(`${data[v].confirmed}`);
-    if (graphicData[v].position === 'right') {
-      context.fillText(`${data[v].confirmed}`, graphicData[v].textX, graphicData[v].textY);
-      context.font = '24px NotoSans';
-      context.fillText(`(총 ${data[v].confirmedAcc})`, graphicData[v].textX + measure.width + 10, graphicData[v].textY);
-    }
-    else {
-      context.fillText(`${data[v].confirmed}`, graphicData[v].textX - measure.width, graphicData[v].textY);
-      context.font = '24px NotoSans';
-      context.fillText(`(총 ${data[v].confirmedAcc})`, graphicData[v].textX - measure.width - 10, graphicData[v].textY);
-    }
+    context.fillText(
+      `${data[v].confirmed}`,
+      graphicData[v].position === 'right' ? graphicData[v].textX : graphicData[v].textX - measure.width,
+      graphicData[v].textY,
+    );
+    context.font = '24px NotoSans';
+    context.fillText(
+      `(총 ${data[v].confirmedAcc})`,
+      graphicData[v].position === 'right' ? graphicData[v].textX + measure.width + 10 : graphicData[v].textX - measure.width - 10,
+      graphicData[v].textY,
+    );
   });
 
   return canvas.toBuffer();
