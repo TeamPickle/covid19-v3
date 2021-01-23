@@ -68,9 +68,9 @@ const makeImage = async (data: ThenArg<ReturnType<typeof parseNcov>>) => {
     context.font = 'bold 48px NotoSans';
     context.textAlign = 'right';
     const measure = context.measureText(`${data[v].confirmed}`);
-    context.fillText(`${data[v].confirmed}`, graphicData[v].textX + 220, graphicData[v].textY);
+    context.fillText(`${data[v].confirmed}`, graphicData[v].textX + 170, graphicData[v].textY);
     context.font = '24px NotoSans';
-    context.fillText(`(총 ${data[v].confirmedAcc})`, graphicData[v].textX + 210 - measure.width, graphicData[v].textY);
+    context.fillText(`(총 ${data[v].confirmedAcc})`, graphicData[v].textX + 160 - measure.width, graphicData[v].textY);
   });
 
   return canvas.toBuffer();
