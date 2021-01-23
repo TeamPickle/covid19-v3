@@ -58,15 +58,16 @@ const makeImage = async (data: ThenArg<ReturnType<typeof parseNcov>>) => {
   locations.slice(1).forEach((v) => {
     context.font = 'bold 48px NotoSans';
     const measure = context.measureText(`${data[v].confirmed}`);
+    context.textalign = graphicData[v].align;
     context.fillText(
       `${data[v].confirmed}`,
-      graphicData[v].position === 'right' ? graphicData[v].textX : graphicData[v].textX + 170,
+      graphicData[v].align === 'left' ? graphicData[v].textX : graphicData[v].textX + 170,
       graphicData[v].textY,
     );
     context.font = '24px NotoSans';
     context.fillText(
       `(총 ${data[v].confirmedAcc})`,
-      graphicData[v].position === 'right' ? graphicData[v].textX + measure.width + 10 : graphicData[v].textX + 160 - measure.width,
+      graphicData[v].align === 'left' ? graphicData[v].textX + measure.width + 10 : graphicData[v].textX + 160 - measure.width,
       graphicData[v].textY,
     );
   });
