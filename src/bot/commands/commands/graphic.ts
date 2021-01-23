@@ -60,13 +60,13 @@ const makeImage = async (data: ThenArg<ReturnType<typeof parseNcov>>) => {
     const measure = context.measureText(`${data[v].confirmed}`);
     context.fillText(
       `${data[v].confirmed}`,
-      graphicData[v].position === 'right' ? graphicData[v].textX : graphicData[v].textX - measure.width,
+      graphicData[v].position === 'right' ? graphicData[v].textX : graphicData[v].textX + 170,
       graphicData[v].textY,
     );
     context.font = '24px NotoSans';
     context.fillText(
       `(총 ${data[v].confirmedAcc})`,
-      graphicData[v].position === 'right' ? graphicData[v].textX + measure.width + 10 : graphicData[v].textX - measure.width - 10,
+      graphicData[v].position === 'right' ? graphicData[v].textX + measure.width + 10 : graphicData[v].textX + 160 - measure.width,
       graphicData[v].textY,
     );
   });
