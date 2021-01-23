@@ -72,7 +72,7 @@ export default class SendCommand extends Command {
 
   async run(msg: CommandoMessage, { mode }: { mode: Mode }) {
     const content = await getContent(msg);
-    if (!content) return msg.reply('입력되지 않았습니다.');
+    if (!content) return msg.channel.send('입력되지 않았습니다.');
 
     const embed = new MessageEmbed();
     embed

@@ -58,10 +58,16 @@ const makeImage = async (data: ThenArg<ReturnType<typeof parseNcov>>) => {
   locations.slice(1).forEach((v) => {
     context.font = 'bold 48px NotoSans';
     const measure = context.measureText(`${data[v].confirmed}`);
-    context.fillText(`${data[v].confirmed}`, graphicData[v].textX, graphicData[v].textY);
-
-    context.font = '24px NotoSans';
-    context.fillText(`(총 ${data[v].confirmedAcc})`, graphicData[v].textX + measure.width + 10, graphicData[v].textY);
+    if (graphicData[v].position === "right") {
+      context.fillText(`${data[v].confirmed}`, graphicData[v].textX, graphicData[v].textY);
+      context.font = '24px NotoSans';
+      context.fillText(`(총 ${data[v].confirmedAcc})`, graphicData[v].textX + measure.width + 10, graphicData[v].textY);
+    }
+    else {
+      context.fillText(`${data[v].confirmed}`, graphicData[v].textX - measure.width, graphicData[v].textY);
+      context.font = '24px NotoSans';
+      context.fillText(`(총 ${data[v].confirmedAcc})`, graphicData[v].textX - measure.width - 10, graphicData[v].textY);
+    }
   });
 
   return canvas.toBuffer();
@@ -71,7 +77,7 @@ export default class GraphicCommand extends Command {
   constructor(client: CommandoClient) {
     super(client, {
       name: 'graphic',
-      aliases: ['국내현황'],
+      aliases: ['국내현황', '지역현황'],
       description: 'graphic command',
       group: 'commands',
       memberName: 'graphic',

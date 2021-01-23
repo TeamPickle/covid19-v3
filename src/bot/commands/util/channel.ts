@@ -24,7 +24,7 @@ export default class ChannelCommand extends Command {
   }
 
   run = async (msg: CommandoMessage, { channel }: { channel: Channel }) => {
-    if (!msg.member.permissions.has('ADMINISTRATOR')) return msg.channel.send('서버관리자만 공지 채널을 지정할 수 있습니다.');
+    if (!msg.member?.permissions.has('ADMINISTRATOR')) return msg.channel.send('서버관리자만 공지 채널을 지정할 수 있습니다.');
     if (!channel) {
       const defaultChannel = await getDefaultChannel(msg.guild);
       if (!defaultChannel) return msg.channel.send('채널을 찾을 수 없습니다.');
