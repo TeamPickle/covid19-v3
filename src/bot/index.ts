@@ -2,8 +2,8 @@ import path from 'path';
 import {
   Command, CommandoClient, CommandoGuild, CommandoMessage, FriendlyError,
 } from 'discord.js-commando';
-import { oneLine, stripIndents } from 'common-tags';
-import { owner, logChannelId } from '@/config.json';
+import { oneLine } from 'common-tags';
+import { owner } from '@/config.json';
 import createServer from '@src/web';
 import Settings from './models/settingsModel';
 import startTask from './tasks';
@@ -27,7 +27,7 @@ const init = async () => {
 
 client.on('error', console.error)
   .on('warn', console.warn)
-  .on('debug', console.log)
+  .on('debug', (m) => !m.toLowerCase().includes('heartbeat') && console.log(m))
   .on('ready', () => {
     console.log(`Client ready; logged in as ${client.user?.username}#${client.user?.discriminator} (${client.user?.id})`);
     init();
