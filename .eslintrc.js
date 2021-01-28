@@ -48,7 +48,7 @@ module.exports = {
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': [
       'error',
-      { argsIgnorePattern: 'next' },
+      { argsIgnorePattern: 'next|_' },
     ],
     'no-underscore-dangle': ['error', { allow: ['_id', '_model'] }],
   },
