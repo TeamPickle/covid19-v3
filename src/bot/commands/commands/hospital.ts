@@ -21,7 +21,7 @@ const getLocation = async (userId: string, city: string, gu: string) => {
 };
 
 const searchHospital = async (city: string, gu: string) => {
-  const response = await fetch(encodeURI(`http://happycastle.club/hospital?city=${city}&gu=${gu}`));
+  const response = await fetch(encodeURI(`http://happycastle.xyz/hospital?city=${city}&gu=${gu}`));
   const { status } = response;
 
   if (status === 500) return 'API Error';
