@@ -14,7 +14,7 @@ RUN \
   unzip NanumFont_TTF_ALL.zip -d /usr/share/fonts/nanumfont && \
   fc-cache -f -v && \
   apk add --no-cache \
-    python \
+    python3 \
     g++ \
     build-base \
     cairo-dev \
