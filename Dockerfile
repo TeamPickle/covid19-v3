@@ -26,7 +26,10 @@ RUN \
     pangomm-dev \
     libjpeg-turbo-dev \
     freetype-dev \
-    curl && \
+    curl \
+    tzdata && \
+  cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime && \
+  echo $TZ > /etc/timezone && \
   yarn install
 COPY . .
 
