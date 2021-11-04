@@ -3,17 +3,13 @@ module.exports = {
     es2021: true,
     node: true,
   },
-  extends: [
-    'airbnb-base',
-  ],
+  extends: ['airbnb-base', 'prettier'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: [
-    '@typescript-eslint',
-  ],
+  plugins: ['@typescript-eslint'],
   rules: {
     'no-console': 'off',
     'import/extensions': [
@@ -27,15 +23,23 @@ module.exports = {
       'error',
       {
         groups: [
-          'builtin', 'external', 'internal', 'parent', 'sibling', 'index',
+          'builtin',
+          'external',
+          'internal',
+          'parent',
+          'sibling',
+          'index',
         ],
-        pathGroups: [{
-          pattern: '@src/**',
-          group: 'internal',
-        }, {
-          pattern: '@/**',
-          group: 'internal',
-        }],
+        pathGroups: [
+          {
+            pattern: '@src/**',
+            group: 'internal',
+          },
+          {
+            pattern: '@/**',
+            group: 'internal',
+          },
+        ],
       },
     ],
     'no-shadow': 'off',
