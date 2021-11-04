@@ -14,11 +14,10 @@ export default class GraphCommand extends Command {
     });
   }
 
-  run = async (msg: CommandoMessage) => {
-    const graphMessage = await msg.channel.send(new MessageAttachment(await makeGraph()));
-    await Graphs.create({
-      url: graphMessage.attachments.first()?.url,
-    });
-    return null;
-  }
+  run = async (msg: CommandoMessage) =>
+    // const graphMessage = await msg.channel.send(new MessageAttachment(await makeGraph()));
+    // await Graphs.create({
+    //   url: graphMessage.attachments.first()?.url,
+    // });
+    null;
 }

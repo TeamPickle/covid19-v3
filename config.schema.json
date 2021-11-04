@@ -6,7 +6,8 @@
     "db",
     "logChannelId",
     "graphChannelId",
-    "corsAllow"
+    "corsAllow",
+    "openApiKey"
   ],
   "properties": {
     "token": {
@@ -33,6 +34,10 @@
       "items": {
         "type": "string"
       }
+    },
+    "openApiKey": {
+      "type": "string",
+      "description": "encoded key"
     }
   }
 }
