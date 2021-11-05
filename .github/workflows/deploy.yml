@@ -19,14 +19,14 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: covid19bot:${{ github.head_ref }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/covid19bot:${{ github.head_ref }}
 
       - name: Build and Push to registry (in main)
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: covid19bot:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/covid19bot:latest
 
   pull_and_deploy:
     name: Pull Docker image and Run
@@ -37,10 +37,8 @@ jobs:
       - name: Pull from private registry and Run
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: ${{ secrets.PORT }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}/
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
           script: |
             docker pull covid19bot:latest
             docker rm -f covid19bot-prod
