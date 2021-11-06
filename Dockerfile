@@ -36,4 +36,6 @@ COPY . .
 ENV LANG=ko_KR.UTF-8 \
     LANGUAGE=ko_KR.UTF-8
 
+EXPOSE 45313
+
 CMD ["yarn", "start"]
