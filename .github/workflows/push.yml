@@ -1,0 +1,69 @@
+name: Docker Build and Deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build_and_push:
+    name: Build Docker image and push to private registry
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Login to private registry
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and Push to registry (in main)
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/covid19bot:latest
+
+  pull_and_deploy:
+    name: Pull Docker image and Run
+    runs-on: ubuntu-latest
+    needs: [build_and_push]
+    steps:
+      - name: Pull from private registry and Run
+        uses: appleboy/ssh-action@master
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          script: |
+            docker pull covid19bot:latest
+            docker rm -f covid19bot-prod
+            docker run --name covid19bot-prod --env-file /pickle/covid19bot.env -d covid19bot
+
+name: Docker Build and Deploy
+on: [push, pull_request]
+jobs:
+  build_and_push:
+    name: Build Docker image and push to private registry
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Login to private registry
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and Push to registry (in PR)
+        if: github.event_name == 'pull_request'
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/covid19bot:${{ github.head_ref }}
+
+      - name: Build and Push to registry (in main)
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/covid19bot:latest
