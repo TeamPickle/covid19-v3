@@ -25,7 +25,7 @@ jobs:
 
   pull_and_deploy:
     name: Pull Docker image and Run
-    runs-on: [self-hosted, main]
+    runs-on: [self-hosted, covid19]
     needs: [build_and_push]
     steps:
       - name: Login to private registry
