@@ -4,7 +4,7 @@ import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
 import fetch from 'node-fetch';
 import { JSDOM } from 'jsdom';
 import dayjs from 'dayjs';
-import config, { graphChannelId } from '@/config.json';
+import config from '@src/config';
 import { ThenArg } from '@src/types/util';
 import Graphs from '@src/bot/models/graphModel';
 import makeGraph from '@src/bot/util/graph';
@@ -291,7 +291,7 @@ export default class StatusCommand extends Command {
     const graph = await Graphs.findOne({}, {}, { sort: { createdAt: -1 } });
     if (!graph || !dayjs(graph.referenceDate).isSame(dayjs(data.date))) {
       const graphChannel = this.client.channels.cache.get(
-        graphChannelId,
+        config.graphChannelId,
       ) as TextChannel;
       const graphMessage = await graphChannel.send(
         new MessageAttachment(

@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import { corsAllow } from '@/config.json';
+import config from '@src/config';
 import { CustomError } from '../types/error';
 import morgan from './middleware/morgan';
 import router from './routes';
@@ -8,10 +8,12 @@ import router from './routes';
 const app = express();
 
 app.use(morgan);
-app.use(cors({
-  origin: corsAllow,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: config.corsAllow,
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.use('/', router);
