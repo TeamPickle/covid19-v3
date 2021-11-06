@@ -1,16 +1,20 @@
 import path from 'path';
 import {
-  Command, CommandoClient, CommandoGuild, CommandoMessage, FriendlyError,
+  Command,
+  CommandoClient,
+  CommandoGuild,
+  CommandoMessage,
+  FriendlyError,
 } from 'discord.js-commando';
 import { oneLine } from 'common-tags';
-import { owner } from '@/config.json';
+import config from '@src/config';
 import createServer from '@src/web';
 import Settings from './models/settingsModel';
 import startTask from './tasks';
 
 const client = new CommandoClient({
   shards: 'auto',
-  owner,
+  owner: config.owner,
   messageCacheMaxSize: 10,
   messageCacheLifetime: 60,
 });
@@ -25,30 +29,41 @@ const init = async () => {
   });
 };
 
-client.on('error', console.error)
+client
+  .on('error', console.error)
   .on('warn', console.warn)
   .on('debug', (m) => !m.toLowerCase().includes('heartbeat') && console.log(m))
   .on('ready', () => {
-    console.log(`Client ready; logged in as ${client.user?.username}#${client.user?.discriminator} (${client.user?.id})`);
+    console.log(
+      `Client ready; logged in as ${client.user?.username}#${client.user?.discriminator} (${client.user?.id})`,
+    );
     init();
     startTask();
     createServer();
   })
-  .on('disconnect', () => { console.warn('Disconnected!'); })
-  .on('shardReconnecting', () => { console.warn('Reconnecting...'); })
+  .on('disconnect', () => {
+    console.warn('Disconnected!');
+  })
+  .on('shardReconnecting', () => {
+    console.warn('Reconnecting...');
+  })
   .on('commandError', (cmd: Command, err: Error, ..._) => {
     if (err instanceof FriendlyError) return;
     console.error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err);
   })
   .on('commandBlock', (msg: CommandoMessage, reason: string, ..._) => {
     console.log(oneLine`
-      Command ${msg.command ? `${msg.command.groupID}:${msg.command.memberName}` : ''}
+      Command ${
+        msg.command ? `${msg.command.groupID}:${msg.command.memberName}` : ''
+      }
       blocked; ${reason}
     `);
   })
   .on('commandPrefixChange', (guild, prefix) => {
     console.log(oneLine`
-      Prefix ${prefix === '' ? 'removed' : `changed to ${prefix || 'the default'}`}
+      Prefix ${
+        prefix === '' ? 'removed' : `changed to ${prefix || 'the default'}`
+      }
       ${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
     `);
   })

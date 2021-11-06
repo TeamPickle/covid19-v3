@@ -1,19 +1,16 @@
 /* global NodeJS */
 import mongoose from 'mongoose';
-import { token, db } from '@/config.json';
+import config from '@src/config';
 import bot from './bot';
 
-mongoose.connect(
-  db,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true,
-  },
-);
+mongoose.connect(config.db, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true,
+});
 
-bot.login(token);
+bot.login(config.token);
 
 const shutdown = (signal: NodeJS.Signals) => {
   console.log(signal);
