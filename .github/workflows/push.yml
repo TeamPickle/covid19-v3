@@ -25,15 +25,17 @@ jobs:
 
   pull_and_deploy:
     name: Pull Docker image and Run
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, main]
     needs: [build_and_push]
     steps:
-      - name: Pull from private registry and Run
-        uses: appleboy/ssh-action@master
+      - name: Login to private registry
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          script: |
-            docker pull covid19bot:latest
-            docker rm -f covid19bot-prod
-            docker run --name covid19bot-prod --env-file /pickle/covid19bot.env -d covid19bot
+
+      - name: Pull from private registry and Run
+        run: |
+          docker pull covid19bot:latest
+          docker rm -f covid19bot-prod
+          docker run --name covid19bot-prod --env-file /pickle/covid19bot.env -d covid19bot
