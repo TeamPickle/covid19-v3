@@ -1,5 +1,9 @@
 import {
-  APIMessageContentResolvable, Collection, Guild, MessageAdditions, TextChannel,
+  APIMessageContentResolvable,
+  Collection,
+  Guild,
+  MessageAdditions,
+  TextChannel,
 } from 'discord.js';
 import { CommandoClient } from 'discord.js-commando';
 import Autocalls from '../models/autocallModel';
@@ -10,29 +14,45 @@ export const getDefaultChannel = async (guild: Guild) => {
   if (row?.channel) {
     const channel = guild.channels.cache.get(row.channel);
     if (
+      channel &&
+      guild.client.user &&
       channel
-      && guild.client.user
-      && channel.permissionsFor(guild.client.user)?.has(['VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS', 'USE_EXTERNAL_EMOJIS'])
+        .permissionsFor(guild.client.user)
+        ?.has([
+          'VIEW_CHANNEL',
+          'SEND_MESSAGES',
+          'EMBED_LINKS',
+          'USE_EXTERNAL_EMOJIS',
+        ])
     ) {
       return channel as TextChannel;
     }
   }
 
   return (
-    (guild.channels
-      .cache
-      .filter((channel) => (
-        (<typeof channel.type[]>['text', 'news', 'store']).includes(channel.type)
-          && !!guild.client.user
-          && !!channel.permissionsFor(guild.client.user)?.has(['VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS', 'USE_EXTERNAL_EMOJIS'])
-      )) as Collection<string, TextChannel>)
-      .sort((a, b) => a.rawPosition - b.rawPosition)
-      .first()
-  );
+    guild.channels.cache.filter(
+      (channel) =>
+        (<typeof channel.type[]>['text', 'news', 'store']).includes(
+          channel.type,
+        ) &&
+        !!guild.client.user &&
+        !!channel
+          .permissionsFor(guild.client.user)
+          ?.has([
+            'VIEW_CHANNEL',
+            'SEND_MESSAGES',
+            'EMBED_LINKS',
+            'USE_EXTERNAL_EMOJIS',
+          ]),
+    ) as Collection<string, TextChannel>
+  )
+    .sort((a, b) => a.rawPosition - b.rawPosition)
+    .first();
 };
 
 const send = async (
-  client: CommandoClient, content: APIMessageContentResolvable | MessageAdditions,
+  client: CommandoClient,
+  content: APIMessageContentResolvable | MessageAdditions,
 ) => {
   let sended = 0;
   const hour = new Date().getHours();
