@@ -63,14 +63,19 @@ const send = async (
     const setting = await Settings.findById(guild.id);
     if (setting?.dnd && (hour < 7 || hour >= 22)) return;
 
-    const channel = await getDefaultChannel(guild);
-    if (!channel) return;
     try {
-      await channel.send(content);
-      sended += 1;
+      const channel = await getDefaultChannel(guild);
+      if (!channel) return;
+      try {
+        await channel.send(content);
+        sended += 1;
+      } catch (e) {
+        console.error(e);
+        console.error(guild.id, channel.id);
+      }
     } catch (e) {
       console.error(e);
-      console.error(guild.id, channel.id);
+      console.error(guild.id);
     }
   }, Promise.resolve());
 
