@@ -10,7 +10,6 @@ import { oneLine } from 'common-tags';
 import config from '@src/config';
 import createServer from '@src/web';
 import Settings from './models/settingsModel';
-import startTask from './tasks';
 
 const client = new CommandoClient({
   shards: 'auto',
@@ -38,7 +37,6 @@ client
       `Client ready; logged in as ${client.user?.username}#${client.user?.discriminator} (${client.user?.id})`,
     );
     init();
-    startTask();
     createServer();
   })
   .on('disconnect', () => {
