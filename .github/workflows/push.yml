@@ -36,6 +36,6 @@ jobs:
 
       - name: Pull from private registry and Run
         run: |
-          docker pull covid19bot:latest
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/covid19bot:latest
           docker rm -f covid19bot-prod
-          docker run --name covid19bot-prod --env-file /pickle/covid19bot.env -d covid19bot
+          docker run --name covid19bot-prod --env-file /pickle/covid19bot.env -d ${{ secrets.DOCKERHUB_USERNAME }}/covid19bot
