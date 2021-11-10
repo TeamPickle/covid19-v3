@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import config from '@src/config';
 import bot from './bot';
 
+process.on("unhandledRejection", (_, __) => null);
+
 mongoose.connect(config.db, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
