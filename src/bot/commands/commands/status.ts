@@ -78,13 +78,6 @@ const makeEmbedWithData = async (
       <:case:905316440452792320> **누적 확진**: ${
         data.confirmedAcc
       } \`전일 대비 ${increase(data.confirmedDelta)}\`
-      <:search:905316440566034432> **검사 중**: ${data.testing}
-      <:medicine:905316440377266228> **치료 중**: ${
-        data.activeAcc
-      } \`전일 대비 ${increase(data.activeDelta)}\`
-      <:cure:905316440272429107> **완치**: ${
-        data.releasedAcc
-      } \`전일 대비 ${increase(data.releasedDelta)}\`
       <:death:905316440440176690> **사망**:  ${
         data.deathAcc
       } \`전일 대비 ${increase(data.deathDelta)}\`

@@ -55,14 +55,6 @@ const drawGraph = (
           lineTension: 0.3,
         },
         {
-          label: '격리해제',
-          data: data.map((e) => e.released),
-          fill: false,
-          backgroundColor: 'darkgreen',
-          borderColor: 'green',
-          lineTension: 0.3,
-        },
-        {
           label: '사망',
           data: data.map((e) => e.death),
           fill: false,
