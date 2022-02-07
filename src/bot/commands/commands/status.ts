@@ -244,6 +244,9 @@ export default class StatusCommand extends Command {
               )}) -
                 ${Math.round((status.death / status.confirmed) * 100)}%
               `}
+
+              ⚠️ 현재 국내 코로나19 확진 현황을 불러오는 공공 API가 매일 업데이트되지 않아, 이틀치의 확진자 및 사망자 합산치가 그래프에 기록되고 있습니다. 자세한 수치는 [질병관리청 보도자료](https://www.kdca.go.kr/board/board.es?mid=a20501010000&bid=0015) 에서 확인해주시기 바랍니다.
+              이용자 분들의 양해 부탁드립니다.
             `,
               )
               .setColor(0x00bfff);
