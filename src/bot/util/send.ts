@@ -1,11 +1,11 @@
 import {
-  APIMessageContentResolvable,
+  Client,
   Collection,
   Guild,
-  MessageAdditions,
+  MessageOptions,
+  MessagePayload,
   TextChannel,
 } from 'discord.js';
-import { CommandoClient } from 'discord.js-commando';
 import Autocalls from '../models/autocallModel';
 import Settings from '../models/settingsModel';
 
@@ -32,9 +32,7 @@ export const getDefaultChannel = async (guild: Guild) => {
   return (
     guild.channels.cache.filter(
       (channel) =>
-        (<typeof channel.type[]>['text', 'news', 'store']).includes(
-          channel.type,
-        ) &&
+        channel.isText() &&
         !!guild.client.user &&
         !!channel
           .permissionsFor(guild.client.user)
@@ -51,8 +49,8 @@ export const getDefaultChannel = async (guild: Guild) => {
 };
 
 const send = async (
-  client: CommandoClient,
-  content: APIMessageContentResolvable | MessageAdditions,
+  client: Client,
+  content: MessagePayload | MessageOptions,
 ) => {
   let sended = 0;
   const hour = new Date().getHours();

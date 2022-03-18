@@ -1,14 +1,13 @@
-import {
-  Canvas, createCanvas, Image, loadImage,
-} from 'canvas';
-import { MessageAttachment } from 'discord.js';
-import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
+import { Canvas, createCanvas, Image, loadImage } from 'canvas';
+import { Client, MessageAttachment } from 'discord.js';
 import fetch from 'node-fetch';
 import { ThenArg } from '@src/types/util';
 import Locations from '@src/bot/models/locationModel';
+import CommandBase from '@src/bot/structure/CommandBase';
+import ReceivedMessage from '@src/bot/structure/ReceivedMessage';
 
 enum MapType {
-  SATELLITE ='satellite',
+  SATELLITE = 'satellite',
   TERRAIN = 'terrain',
   BASIC = 'basic',
 }
@@ -56,13 +55,15 @@ interface AddressBoundaryData {
   features: {
     type: 'Feature';
     bbox: [number, number, number, number];
-    geometry: {
-      type: 'MultiPolygon';
-      coordinates: [number, number][][][];
-    } | {
-      type: 'Polygon';
-      coordinates: [number, number][][];
-    }
+    geometry:
+      | {
+          type: 'MultiPolygon';
+          coordinates: [number, number][][][];
+        }
+      | {
+          type: 'Polygon';
+          coordinates: [number, number][][];
+        };
   }[];
 }
 
@@ -99,7 +100,10 @@ const getLocation = async (userId: string, query: string) => {
  * @returns [number, number] float
  */
 const deg2num = (longDeg: number, latDeg: number, zoom: number) => {
-  if (zoom < 0 || zoom > 21) throw new Error('zoom must be grater than or equal to 0 and less than or equal to 21');
+  if (zoom < 0 || zoom > 21)
+    throw new Error(
+      'zoom must be grater than or equal to 0 and less than or equal to 21',
+    );
   const latRad = latDeg * (Math.PI / 180);
   const n = 2 ** zoom;
   const xtile = ((longDeg + 180) / 360) * n;
@@ -129,15 +133,23 @@ const parseBoundary = (boundary: Boundary): ParsedBoundary => ({
   minY: +boundary.minY,
 });
 
-const getCenterOfCoordinate = (boundary: ParsedBoundary) => (
-  [(boundary.minX + boundary.maxX) / 2, (boundary.minY + boundary.maxY) / 2] as const
-);
+const getCenterOfCoordinate = (boundary: ParsedBoundary) =>
+  [
+    (boundary.minX + boundary.maxX) / 2,
+    (boundary.minY + boundary.maxY) / 2,
+  ] as const;
 
-const getZoomByBoundary = (boundary: ParsedBoundary, amountOfSideTile: number) => {
+const getZoomByBoundary = (
+  boundary: ParsedBoundary,
+  amountOfSideTile: number,
+) => {
   for (let zoom = 21; zoom > 5; zoom -= 1) {
     const [left, top] = deg2num(+boundary.minX, +boundary.minY, zoom);
     const [right, bottom] = deg2num(+boundary.maxX, +boundary.maxY, zoom);
-    if (right - left < amountOfSideTile - 1 && bottom - top < amountOfSideTile - 1) {
+    if (
+      right - left < amountOfSideTile - 1 &&
+      bottom - top < amountOfSideTile - 1
+    ) {
       return zoom;
     }
   }
@@ -145,15 +157,21 @@ const getZoomByBoundary = (boundary: ParsedBoundary, amountOfSideTile: number) =
 };
 
 const getMapVersion = async () => {
-  const response = await fetch('https://map.pstatic.net/nrb/styles/basic.json?fmt=png');
+  const response = await fetch(
+    'https://map.pstatic.net/nrb/styles/basic.json?fmt=png',
+  );
   const data = await response.json();
   return data.version as string;
 };
 
 const searchMapByQuery = async (query: string) => {
-  const response = await fetch(`https://map.naver.com/v5/api/search?caller=pcweb&query=${encodeURIComponent(query)}`);
+  const response = await fetch(
+    `https://map.naver.com/v5/api/search?caller=pcweb&query=${encodeURIComponent(
+      query,
+    )}`,
+  );
   if (response.status !== 200) return '서버 에러가 발생했습니다.';
-  return await response.json() as SearchData;
+  return (await response.json()) as SearchData;
 };
 
 const getMapData = async (data: SearchData) => {
@@ -197,13 +215,17 @@ const getMapImages = async (
   const alignedXtile = Math.floor(xtile - Math.floor(numberOfXtile / 2));
   const alignedYtile = Math.floor(ytile - Math.floor(numberOfYtile / 2));
   return Promise.all(
-    [...Array(numberOfYtile)].map((_, y) => (
+    [...Array(numberOfYtile)].map((_, y) =>
       Promise.all(
-        [...Array(numberOfXtile)].map((_, x) => loadImage(
-          `https://map.pstatic.net/nrb/styles/${mapType}/${mapVersion}/${zoom}/${x + alignedXtile}/${y + alignedYtile}.png?mt=bg.ol.lko`,
-        )),
-      )
-    )),
+        [...Array(numberOfXtile)].map((_, x) =>
+          loadImage(
+            `https://map.pstatic.net/nrb/styles/${mapType}/${mapVersion}/${zoom}/${
+              x + alignedXtile
+            }/${y + alignedYtile}.png?mt=bg.ol.lko`,
+          ),
+        ),
+      ),
+    ),
   );
 };
 
@@ -211,7 +233,8 @@ const getMapImage = (images: Image[][]) => {
   const imageSize = images[0][0].width;
 
   const canvas = createCanvas(
-    imageSize * images[0].length, imageSize * images.length,
+    imageSize * images[0].length,
+    imageSize * images.length,
   );
   const ctx = canvas.getContext('2d');
   images.forEach((y, yIndex) => {
@@ -226,7 +249,7 @@ const getAddressBoundary = async (addressId: string, zoom: number) => {
   const response = await fetch(
     `https://map.naver.com/v5/api/wfs/stargate?output=geojson&targetcrs=epsg:4326&codetype=naver&request=codeToFeatures&level=${zoom}&keyword=${addressId}`,
   );
-  const data = await response.json() as AddressBoundaryData;
+  const data = (await response.json()) as AddressBoundaryData;
   return data.features[0].geometry.type === 'MultiPolygon'
     ? data.features[0].geometry.coordinates.map((e) => e[0])
     : data.features[0].geometry.coordinates;
@@ -254,17 +277,16 @@ const drawAddressBoundary = (
 
 const getCoronaData = async () => {
   const response = await fetch('https://coroname.me/getdata');
-  return await response.json() as CoronaData;
+  return (await response.json()) as CoronaData;
 };
 
-const parseCoronaData = (data: CoronaData): ParsedCoronaData[] => (
+const parseCoronaData = (data: CoronaData): ParsedCoronaData[] =>
   data.data.map((e) => ({
     visitedDate: new Date(e.visitedDate),
     createDate: new Date(e.createDate),
     lat: +e.latlng.split(', ')[0],
     long: +e.latlng.split(', ')[1],
-  }))
-);
+  }));
 
 const drawCoronaData = (
   canvas: Canvas,
@@ -285,39 +307,31 @@ const drawCoronaData = (
     ctx.fill();
 
     ctx.beginPath();
-    ctx.fillStyle = (
+    ctx.fillStyle =
       // eslint-disable-next-line no-nested-ternary
-      delta < 1 ? 'red'
-        : delta < 4 ? 'yellow' : 'green'
-    );
+      delta < 1 ? 'red' : delta < 4 ? 'yellow' : 'green';
     ctx.arc(x, y, zoom / 2 + 3, 0, 360);
     ctx.fill();
   });
 };
 
-export default class MapCommand extends Command {
-  constructor(client: CommandoClient) {
+export default class MapCommand extends CommandBase {
+  constructor(client: Client) {
     super(client, {
       name: 'map',
       aliases: ['지도'],
       description: 'map command',
-      group: 'commands',
-      memberName: 'map',
-      args: [
-        {
-          key: 'query',
-          prompt: '',
-          default: '',
-          type: 'string',
-        },
-      ],
     });
   }
 
-  async run(msg: CommandoMessage, { query: _query }: { query: string }) {
-    if (msg.channel.type === 'text'
-      && this.client.user
-      && !msg.channel.permissionsFor(this.client.user)?.has(['SEND_MESSAGES', 'ATTACH_FILES'])
+  runCommand = async (msg: ReceivedMessage, args: string[]) => {
+    const [, _query] = args;
+    if (
+      msg.channel.type !== 'DM' &&
+      this.client.user &&
+      !msg.channel
+        .permissionsFor(this.client.user)
+        ?.has(['SEND_MESSAGES', 'ATTACH_FILES'])
     ) {
       return msg.channel.send('권한이 없어 명령을 수행할 수 없습니다.');
     }
@@ -329,21 +343,39 @@ export default class MapCommand extends Command {
     if (typeof search === 'string') return msg.channel.send(search);
 
     const mapData = await getMapData(search);
-    if (mapData === null) return msg.channel.send('해당 지역을 찾을 수 없습니다.');
-    if (mapData.boundary === null) return msg.channel.send('검색결과가 없습니다. 좀더 넓은 범위로 검색해주세요.');
+    if (mapData === null)
+      return msg.channel.send('해당 지역을 찾을 수 없습니다.');
+    if (mapData.boundary === null)
+      return msg.channel.send(
+        '검색결과가 없습니다. 좀더 넓은 범위로 검색해주세요.',
+      );
 
     const boundary = parseBoundary(mapData.boundary);
     const [x, y] = getCenterOfCoordinate(boundary);
     const zoom = getZoomByBoundary(boundary, 5);
     const [xtile, ytile] = deg2num(x, y, zoom);
     const mapVersion = await getMapVersion();
-    const image = getMapImage(await getMapImages(xtile, ytile, zoom, mapVersion));
+    const image = getMapImage(
+      await getMapImages(xtile, ytile, zoom, mapVersion),
+    );
 
     if (mapData.id) {
-      drawAddressBoundary(image, zoom, [xtile, ytile], await getAddressBoundary(mapData.id, zoom));
+      drawAddressBoundary(
+        image,
+        zoom,
+        [xtile, ytile],
+        await getAddressBoundary(mapData.id, zoom),
+      );
     }
 
-    drawCoronaData(image, zoom, [xtile, ytile], parseCoronaData(await getCoronaData()));
-    return msg.channel.send(new MessageAttachment(image.toBuffer()));
-  }
+    drawCoronaData(
+      image,
+      zoom,
+      [xtile, ytile],
+      parseCoronaData(await getCoronaData()),
+    );
+    return msg.channel.send({
+      attachments: [new MessageAttachment(image.toBuffer())],
+    });
+  };
 }

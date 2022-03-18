@@ -1,22 +1,21 @@
-import { format, increase } from '@src/bot/util/board';
 import { stripIndents } from 'common-tags';
-import { MessageEmbed } from 'discord.js';
-import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
+import { Client, MessageEmbed } from 'discord.js';
 import { JSDOM } from 'jsdom';
 import fetch from 'node-fetch';
+import { format, increase } from '@src/bot/util/board';
+import CommandBase from '@src/bot/structure/CommandBase';
+import ReceivedMessage from '@src/bot/structure/ReceivedMessage';
 
-export default class SymptomCommand extends Command {
-  constructor(client: CommandoClient) {
+export default class SymptomCommand extends CommandBase {
+  constructor(client: Client) {
     super(client, {
       name: 'vaccine',
       aliases: ['백신'],
       description: 'vaccine command',
-      group: 'commands',
-      memberName: 'vaccine',
     });
   }
 
-  run = async (msg: CommandoMessage) => {
+  runCommand = async (msg: ReceivedMessage) => {
     const vaccineData = await (
       await fetch('https://nip.kdca.go.kr/irgd/cov19stats.do?list=all')
     ).text();
@@ -55,6 +54,6 @@ export default class SymptomCommand extends Command {
       `,
       )
       .setColor(0x006699);
-    return msg.channel.send(embed);
+    return msg.channel.send({ embeds: [embed] });
   };
 }

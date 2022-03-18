@@ -1,6 +1,10 @@
 import { oneLine, stripIndents } from 'common-tags';
-import { MessageAttachment, MessageEmbed, TextChannel } from 'discord.js';
-import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
+import {
+  Client,
+  MessageAttachment,
+  MessageEmbed,
+  TextChannel,
+} from 'discord.js';
 import fetch from 'node-fetch';
 import { JSDOM } from 'jsdom';
 import dayjs from 'dayjs';
@@ -11,6 +15,8 @@ import makeGraph from '@src/bot/util/graph';
 import disaster from '@src/bot/data/commands/disaster';
 import { parseBoard, format, increase } from '@src/bot/util/board';
 import send from '@src/bot/util/send';
+import ReceivedMessage from '@src/bot/structure/ReceivedMessage';
+import CommandBase from '@src/bot/structure/CommandBase';
 
 const parseNumber = (i: string) => +i.replace(/(,| )/g, '');
 const formatDate = (date: Date) => oneLine`
@@ -182,26 +188,16 @@ const getDataFromXML = (
   testing: parseInnerHTMLNumber(afterDoc.querySelector('examCnt')),
 });
 
-export default class StatusCommand extends Command {
-  constructor(client: CommandoClient) {
+export default class StatusCommand extends CommandBase {
+  constructor(client: Client) {
     super(client, {
       name: 'status',
       aliases: ['현황'],
       description: 'status command',
-      group: 'commands',
-      memberName: 'status',
-      args: [
-        {
-          key: 'location',
-          prompt: '',
-          type: 'string',
-          default: '',
-        },
-      ],
     });
   }
 
-  async run(msg: CommandoMessage, { location }: { location: string }) {
+  runCommand = async (msg: ReceivedMessage, [, location]: string[]) => {
     if (location) {
       const data = await parseBoard();
       if (data) {
@@ -250,7 +246,7 @@ export default class StatusCommand extends Command {
             `,
               )
               .setColor(0x00bfff);
-            return msg.channel.send(embed);
+            return msg.channel.send({ embeds: [embed] });
           }
         }
       }
@@ -264,12 +260,14 @@ export default class StatusCommand extends Command {
         )}\` 또는 \`국가 이름\`
       `);
       }
-      return msg.channel.send(
-        makeEmbedWithLocalData(
-          location,
-          localData[location as keyof typeof localData],
-        ),
-      );
+      return msg.channel.send({
+        embeds: [
+          makeEmbedWithLocalData(
+            location,
+            localData[location as keyof typeof localData],
+          ),
+        ],
+      });
     }
     const ncov = await (
       await fetch(
@@ -289,32 +287,36 @@ export default class StatusCommand extends Command {
       const graphChannel = this.client.channels.cache.get(
         config.graphChannelId,
       ) as TextChannel;
-      const graphMessage = await graphChannel.send(
-        new MessageAttachment(
-          await makeGraph(
-            Array.from(items)
-              .slice(0, -1)
-              .map((item, index) => ({
-                confirmed:
-                  parseInnerHTMLNumber(item.querySelector('decideCnt')) -
-                  parseInnerHTMLNumber(
-                    items[index + 1].querySelector('decideCnt'),
+      const graphMessage = await graphChannel.send({
+        attachments: [
+          new MessageAttachment(
+            await makeGraph(
+              Array.from(items)
+                .slice(0, -1)
+                .map((item, index) => ({
+                  confirmed:
+                    parseInnerHTMLNumber(item.querySelector('decideCnt')) -
+                    parseInnerHTMLNumber(
+                      items[index + 1].querySelector('decideCnt'),
+                    ),
+                  date: new Date(
+                    item.querySelector('createDt')?.innerHTML || '',
                   ),
-                date: new Date(item.querySelector('createDt')?.innerHTML || ''),
-                death:
-                  parseInnerHTMLNumber(item.querySelector('deathCnt')) -
-                  parseInnerHTMLNumber(
-                    items[index + 1].querySelector('deathCnt'),
-                  ),
-                released:
-                  parseInnerHTMLNumber(item.querySelector('clearCnt')) -
-                  parseInnerHTMLNumber(
-                    items[index + 1].querySelector('clearCnt'),
-                  ),
-              })),
+                  death:
+                    parseInnerHTMLNumber(item.querySelector('deathCnt')) -
+                    parseInnerHTMLNumber(
+                      items[index + 1].querySelector('deathCnt'),
+                    ),
+                  released:
+                    parseInnerHTMLNumber(item.querySelector('clearCnt')) -
+                    parseInnerHTMLNumber(
+                      items[index + 1].querySelector('clearCnt'),
+                    ),
+                })),
+            ),
           ),
-        ),
-      );
+        ],
+      });
       const url = graphMessage.attachments.first()?.url || '';
       await Graphs.create({
         url,
@@ -322,12 +324,14 @@ export default class StatusCommand extends Command {
       });
       const embed = await makeEmbedWithData(data, url);
       embed.setTitle('🔄 현황 변경 안내');
-      send(this.client, embed).then(({ toSendSize, sended }) => {
+      send(this.client, { embeds: [embed] }).then(({ toSendSize, sended }) => {
         (graphChannel as TextChannel).send(`${sended}/${toSendSize}`);
       });
-      return msg.channel.send(await makeEmbedWithData(data, url));
+      return msg.channel.send({ embeds: [await makeEmbedWithData(data, url)] });
     }
 
-    return msg.channel.send(await makeEmbedWithData(data, graph.url));
-  }
+    return msg.channel.send({
+      embeds: [await makeEmbedWithData(data, graph.url)],
+    });
+  };
 }

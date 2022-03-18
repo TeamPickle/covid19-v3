@@ -1,23 +1,23 @@
 import { stripIndents } from 'common-tags';
-import { MessageEmbed } from 'discord.js';
-import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
+import { Client, MessageEmbed } from 'discord.js';
+import CommandBase from '@src/bot/structure/CommandBase';
+import ReceivedMessage from '@src/bot/structure/ReceivedMessage';
 
-export default class SymptomCommand extends Command {
-  constructor(client: CommandoClient) {
+export default class SymptomCommand extends CommandBase {
+  constructor(client: Client) {
     super(client, {
       name: 'symptom',
       aliases: ['증상'],
       description: 'symptom command',
-      group: 'commands',
-      memberName: 'symptom',
     });
   }
 
-  run = async (msg: CommandoMessage) => {
+  runCommand = async (msg: ReceivedMessage) => {
     const embed = new MessageEmbed();
     embed
       .setTitle('COVID-19(코로나19) 증상 안내')
-      .setDescription(stripIndents`
+      .setDescription(
+        stripIndents`
         발열(37.5도 이상)
         호흡기 증상(기침, 가래, 인후통 등)
         폐렴 증상
@@ -28,8 +28,9 @@ export default class SymptomCommand extends Command {
 
         지역 별 선별 진료소 현황은 아래 링크에서 확인하실 수 있습니다:
         http://www.mohw.go.kr/react/popup_200128.html
-      `)
+      `,
+      )
       .setColor(0x006699);
-    return msg.channel.send(embed);
-  }
+    return msg.channel.send({ embeds: [embed] });
+  };
 }

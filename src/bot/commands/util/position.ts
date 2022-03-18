@@ -1,26 +1,21 @@
 import { stripIndents } from 'common-tags';
-import { Command, CommandoClient, CommandoMessage } from 'discord.js-commando';
+import { Client } from 'discord.js';
 import Locations from '@src/bot/models/locationModel';
+import CommandBase from '@src/bot/structure/CommandBase';
+import ReceivedMessage from '@src/bot/structure/ReceivedMessage';
+import { getGuildPrefix } from '@src/bot/util/prefix';
 
-export default class PositionCommand extends Command {
-  constructor(client: CommandoClient) {
+export default class PositionCommand extends CommandBase {
+  constructor(client: Client) {
     super(client, {
       name: 'setpos',
       aliases: ['위치지정', '위치설정'],
       description: 'setpos command',
-      group: 'util',
-      memberName: 'setpos',
-      args: [{
-        key: 'location',
-        type: 'string',
-        prompt: '',
-        default: '',
-      }],
     });
   }
 
-  async run(msg: CommandoMessage, { location }: { location: string }) {
-    const prefix = msg.guild?.commandPrefix || this.client.commandPrefix;
+  runCommand = async (msg: ReceivedMessage, [, location]: string[]) => {
+    const prefix = getGuildPrefix(msg.guild);
     if (!location) {
       const row = await Locations.findById(msg.author.id);
       if (!row) {
@@ -36,7 +31,13 @@ export default class PositionCommand extends Command {
         ex) \`${prefix}위치지정 서울 서초구\`
       `);
     }
-    await Locations.updateOne({ _id: msg.author.id }, { location }, { upsert: true });
-    return msg.channel.send(`위치 지정이 완료되었습니다. 이제 \`${prefix}병원\` \`${prefix}재난문자\` 를 지역 입력 없이 사용할 시 지정한 위치의 정보를 불러옵니다.`);
-  }
+    await Locations.updateOne(
+      { _id: msg.author.id },
+      { location },
+      { upsert: true },
+    );
+    return msg.channel.send(
+      `위치 지정이 완료되었습니다. 이제 \`${prefix}병원\` \`${prefix}재난문자\` 를 지역 입력 없이 사용할 시 지정한 위치의 정보를 불러옵니다.`,
+    );
+  };
 }
