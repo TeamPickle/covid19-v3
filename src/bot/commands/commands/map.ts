@@ -372,7 +372,7 @@ export default class MapCommand extends CommandBase {
       parseCoronaData(await getCoronaData()),
     );
     return msg.respond({
-      attachments: [new MessageAttachment(image.toBuffer())],
+      files: [new MessageAttachment(image.toBuffer())],
     });
   };
 }

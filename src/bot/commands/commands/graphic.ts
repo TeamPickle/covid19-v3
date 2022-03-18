@@ -111,6 +111,6 @@ export default class GraphicCommand extends CommandBase {
 
   runCommand = async (msg: ReceivedMessage) =>
     msg.respond({
-      attachments: [new MessageAttachment(await makeImage(await parseNcov()))],
+      files: [new MessageAttachment(await makeImage(await parseNcov()))],
     });
 }

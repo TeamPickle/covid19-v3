@@ -288,7 +288,7 @@ export default class StatusCommand extends CommandBase {
         config.graphChannelId,
       ) as TextChannel;
       const graphMessage = await graphChannel.send({
-        attachments: [
+        files: [
           new MessageAttachment(
             await makeGraph(
               Array.from(items)

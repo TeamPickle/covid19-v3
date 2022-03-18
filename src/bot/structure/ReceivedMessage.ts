@@ -38,8 +38,7 @@ export default class ReceivedMessage {
   }
 
   async respond(options: MessageOptions | string): Promise<Message> {
-    if (this.origin instanceof Message)
-      return this.origin.channel.send(options);
+    if (this.origin instanceof Message) return this.origin.reply(options);
     if (typeof options === 'string')
       return this.origin.reply({
         content: options,
