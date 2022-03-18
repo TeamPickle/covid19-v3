@@ -32,10 +32,11 @@ RUN \
   echo $TZ > /etc/timezone && \
   yarn install
 COPY . .
+RUN yarn build
 
 ENV LANG=ko_KR.UTF-8 \
     LANGUAGE=ko_KR.UTF-8
 
 EXPOSE 45313
 
-CMD ["yarn", "start"]
+CMD ["yarn", "/app/dist/index.js"]

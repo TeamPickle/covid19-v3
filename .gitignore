@@ -2,3 +2,4 @@ node_modules
 *.log
 final.png
 .env
+dist
