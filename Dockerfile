@@ -39,4 +39,4 @@ ENV LANG=ko_KR.UTF-8 \
 
 EXPOSE 45313
 
-CMD ["yarn", "/app/dist/index.js"]
+CMD ["node", "/app/dist/index.js"]
