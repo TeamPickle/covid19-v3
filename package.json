@@ -45,7 +45,7 @@
     "mongoose": "^5.11.10",
     "morgan": "^1.10.0",
     "node-cron": "^2.0.3",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "require-all": "^3.0.0"
   }
 }
