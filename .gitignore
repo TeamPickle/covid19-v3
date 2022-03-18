@@ -2,4 +2,6 @@ node_modules
 *.log
 final.png
 .env
-dist
+# /dist/*
+dist/**/*.*
+!/dist/bot/data/commands/graphic/*.png
