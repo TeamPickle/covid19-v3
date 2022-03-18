@@ -35,10 +35,6 @@ module.exports = {
             pattern: '@src/**',
             group: 'internal',
           },
-          {
-            pattern: '@/**',
-            group: 'internal',
-          },
         ],
       },
     ],

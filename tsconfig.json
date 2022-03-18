@@ -5,10 +5,9 @@
     "lib": ["es2020"],
     "outDir": "./dist",
     "strict": true,
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "paths": {
-      "@src/*": ["src/*"],
-      "@/*": ["*"]
+      "@src/*": ["*"]
     },
     "typeRoots": ["./node_modules/@types", "./src/@types"],
     "esModuleInterop": true,
