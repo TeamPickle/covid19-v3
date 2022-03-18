@@ -5,8 +5,8 @@ const commandHandler = (received: Message | Interaction) => {
   if (received instanceof Message) {
     const prefix =
       received.channel.type === 'DM'
-        ? '.'
-        : guildPrefix.find((g) => g.id === received.guild?.id)?.prefix ?? '.';
+        ? '!'
+        : guildPrefix.find((g) => g.id === received.guild?.id)?.prefix ?? '!';
     if (
       !(
         !received.author.bot &&
