@@ -73,10 +73,10 @@ export default class SendCommand extends CommandBase {
   runCommand = async (msg: ReceivedMessage, [, modeString]: string[]) => {
     const mode = modes[modeString as Mode];
     if (!mode) {
-      return msg.channel.send('잘못된 인자');
+      return msg.respond('잘못된 인자');
     }
     const content = await getContent(msg);
-    if (!content) return msg.channel.send('입력되지 않았습니다.');
+    if (!content) return msg.respond('입력되지 않았습니다.');
 
     const embed = new MessageEmbed();
     embed
@@ -90,6 +90,6 @@ export default class SendCommand extends CommandBase {
       return msg.respond('취소되었습니다.');
 
     const { sended, toSendSize } = await send(this.client, { embeds: [embed] });
-    return msg.channel.send(`${sended}/${toSendSize}`);
+    return msg.respond(`${sended}/${toSendSize}`);
   };
 }

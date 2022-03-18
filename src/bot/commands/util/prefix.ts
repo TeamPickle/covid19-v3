@@ -17,15 +17,13 @@ export default class PrefixCommand extends CommandBase {
   runCommand = async (msg: ReceivedMessage, [, prefix]: string[]) => {
     const member = await msg.guild?.members.fetch(msg.author.id);
     if (!member?.permissions.has('ADMINISTRATOR')) {
-      return msg.channel.send('서버관리자만 접두사를 변경할 수 있습니다.');
+      return msg.respond('서버관리자만 접두사를 변경할 수 있습니다.');
     }
     if (!msg.guild) return null;
 
     const originalPrefix = getGuildPrefix(msg.guild);
     if (!prefix) {
-      return msg.channel.send(
-        `명령어 사용법: \`${originalPrefix}접두사설정 !\``,
-      );
+      return msg.respond(`명령어 사용법: \`${originalPrefix}접두사설정 !\``);
     }
     await Settings.updateOne(
       { _id: msg.guild.id },
@@ -33,7 +31,7 @@ export default class PrefixCommand extends CommandBase {
       { upsert: true },
     );
     setGuildPrefix(msg.guild, prefix);
-    return msg.channel.send(
+    return msg.respond(
       `${prefix}(으)로 접두사를 변경했습니다. \`${prefix}도움\`과 같이 사용하실 수 있습니다.`,
     );
   };

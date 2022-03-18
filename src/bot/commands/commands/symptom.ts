@@ -31,6 +31,6 @@ export default class SymptomCommand extends CommandBase {
       `,
       )
       .setColor(0x006699);
-    return msg.channel.send({ embeds: [embed] });
+    return msg.respond({ embeds: [embed] });
   };
 }

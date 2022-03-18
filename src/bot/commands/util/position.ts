@@ -19,13 +19,13 @@ export default class PositionCommand extends CommandBase {
     if (!location) {
       const row = await Locations.findById(msg.author.id);
       if (!row) {
-        return msg.channel.send(stripIndents`
+        return msg.respond(stripIndents`
           위치를 지정하지 않았습니다.
           명령어 사용법 : \`${prefix}위치지정 [시/도] [시/군/구]\`
           ex) \`${prefix}위치지정 서울 서초구\`
         `);
       }
-      return msg.channel.send(stripIndents`
+      return msg.respond(stripIndents`
         위치: ${row.location}
         명령어 사용법 : \`${prefix}위치지정 [시/도] [시/군/구]\`
         ex) \`${prefix}위치지정 서울 서초구\`
@@ -36,7 +36,7 @@ export default class PositionCommand extends CommandBase {
       { location },
       { upsert: true },
     );
-    return msg.channel.send(
+    return msg.respond(
       `위치 지정이 완료되었습니다. 이제 \`${prefix}병원\` \`${prefix}재난문자\` 를 지역 입력 없이 사용할 시 지정한 위치의 정보를 불러옵니다.`,
     );
   };

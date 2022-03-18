@@ -14,7 +14,7 @@ export default class PingCommand extends Command {
 
   async run(msg: CommandoMessage) {
     if (!this.client.owners?.includes(msg.author)) return null;
-    return msg.channel.send(oneLine`
+    return msg.respond(oneLine`
       ping: ${Date.now() - msg.createdTimestamp}ms.
       uptime: ${Math.floor((this.client.uptime || 0) / 1000)}s`);
   }

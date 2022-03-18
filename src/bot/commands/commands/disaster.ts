@@ -25,7 +25,7 @@ export default class DisasterCommand extends CommandBase {
   public runCommand = async (msg: ReceivedMessage, args: string[]) => {
     const location = await getLocation(msg.author.id, args[1]);
     if (!location) {
-      return msg.channel.send(stripIndents`
+      return msg.respond(stripIndents`
         명령어 사용법 : \`${getGuildPrefix(msg.guild)}재난문자 [지역]\`
         지역 목록 : \`${disasterData.disasterRegion.join(' ')}\`
       `);
@@ -41,7 +41,7 @@ export default class DisasterCommand extends CommandBase {
     const disasterIndex = disasterData.disasterRegion.indexOf(u);
 
     if (disasterIndex < 0) {
-      return msg.channel.send(stripIndents`
+      return msg.respond(stripIndents`
         지원하지 않는 지역입니다. 다음 지역 중 하나로 다시 시도해주세요.
         \`${disasterData.disasterRegion.join(' ')}\`
       `);
@@ -62,7 +62,7 @@ export default class DisasterCommand extends CommandBase {
     const distime = [...source.matchAll(/<time datetime="">(.+?)<\/time>/g)];
 
     if (local.length === 0 && con.length === 0) {
-      return msg.channel.send('재난문자를 불러올 수 없습니다.');
+      return msg.respond('재난문자를 불러올 수 없습니다.');
     }
 
     const embed = new MessageEmbed();
@@ -76,6 +76,6 @@ export default class DisasterCommand extends CommandBase {
           value: con[i][1],
         })),
       );
-    return msg.channel.send({ embeds: [embed] });
+    return msg.respond({ embeds: [embed] });
   };
 }

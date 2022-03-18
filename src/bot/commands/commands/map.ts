@@ -333,22 +333,19 @@ export default class MapCommand extends CommandBase {
         .permissionsFor(this.client.user)
         ?.has(['SEND_MESSAGES', 'ATTACH_FILES'])
     ) {
-      return msg.channel.send('권한이 없어 명령을 수행할 수 없습니다.');
+      return msg.respond('권한이 없어 명령을 수행할 수 없습니다.');
     }
 
     const query = await getLocation(msg.author.id, _query);
-    if (!query) return msg.channel.send('지역을 입력해주세요');
+    if (!query) return msg.respond('지역을 입력해주세요');
 
     const search = await searchMapByQuery(query);
-    if (typeof search === 'string') return msg.channel.send(search);
+    if (typeof search === 'string') return msg.respond(search);
 
     const mapData = await getMapData(search);
-    if (mapData === null)
-      return msg.channel.send('해당 지역을 찾을 수 없습니다.');
+    if (mapData === null) return msg.respond('해당 지역을 찾을 수 없습니다.');
     if (mapData.boundary === null)
-      return msg.channel.send(
-        '검색결과가 없습니다. 좀더 넓은 범위로 검색해주세요.',
-      );
+      return msg.respond('검색결과가 없습니다. 좀더 넓은 범위로 검색해주세요.');
 
     const boundary = parseBoundary(mapData.boundary);
     const [x, y] = getCenterOfCoordinate(boundary);
@@ -374,7 +371,7 @@ export default class MapCommand extends CommandBase {
       [xtile, ytile],
       parseCoronaData(await getCoronaData()),
     );
-    return msg.channel.send({
+    return msg.respond({
       attachments: [new MessageAttachment(image.toBuffer())],
     });
   };

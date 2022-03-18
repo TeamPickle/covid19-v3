@@ -64,7 +64,7 @@ export default class HospitalCommand extends CommandBase {
     const hospitals = await searchHospital(
       ...(await getLocation(msg.author.id, city, gu)),
     );
-    if (typeof hospitals === 'string') return msg.channel.send(hospitals);
-    return msg.channel.send({ embeds: [getEmbedByHospitalData(hospitals)] });
+    if (typeof hospitals === 'string') return msg.respond(hospitals);
+    return msg.respond({ embeds: [getEmbedByHospitalData(hospitals)] });
   };
 }

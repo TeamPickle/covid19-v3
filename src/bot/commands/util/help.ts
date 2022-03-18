@@ -19,7 +19,7 @@ export default class HelpCommand extends CommandBase {
     if (detail) {
       const commands = Object.keys(helpData.detail);
       if (!commands.includes(detail)) {
-        return msg.channel.send(stripIndents`
+        return msg.respond(stripIndents`
           존재하지 않는 명령어 입니다.
           \`${commands.join(', ')}\` 중 하나를 입력해주세요.
         `);
@@ -28,7 +28,7 @@ export default class HelpCommand extends CommandBase {
       const embed = new MessageEmbed()
         .setTitle(`${prefix} ${detail} ${command.title}`)
         .setDescription(command.desc.replace(/{prefix}/g, prefix));
-      return msg.channel.send({ embeds: [embed] });
+      return msg.respond({ embeds: [embed] });
     }
     const isDm = msg.channel.type === 'DM';
     const embed = new MessageEmbed()
@@ -60,15 +60,14 @@ export default class HelpCommand extends CommandBase {
       .addField('버그 신고', 'http://forum.tpk.kr', true);
     try {
       await msg.author.send({ embeds: [embed] });
-      if (!isDm)
-        return msg.channel.send('명령어 리스트를 DM으로 전송했습니다.');
+      if (!isDm) return msg.respond('명령어 리스트를 DM으로 전송했습니다.');
     } catch (e) {
       if (e instanceof DiscordAPIError) {
         embed.addField(
           '⚠️',
           'DM으로 보낼 수 없어 서버 채팅으로 보내진 메시지입니다.',
         );
-        return msg.channel.send({ embeds: [embed] });
+        return msg.respond({ embeds: [embed] });
       }
       throw e;
     }

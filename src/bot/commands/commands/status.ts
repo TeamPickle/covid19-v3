@@ -246,21 +246,21 @@ export default class StatusCommand extends CommandBase {
             `,
               )
               .setColor(0x00bfff);
-            return msg.channel.send({ embeds: [embed] });
+            return msg.respond({ embeds: [embed] });
           }
         }
       }
 
       const localData = await parseLocalData();
       if (!Object.keys(localData).includes(location)) {
-        return msg.channel.send(stripIndents`
+        return msg.respond(stripIndents`
         지원하지 않는 지역입니다.
         다음 중 하나를 입력해 주세요: \`${Object.keys(localData).join(
           ' ',
         )}\` 또는 \`국가 이름\`
       `);
       }
-      return msg.channel.send({
+      return msg.respond({
         embeds: [
           makeEmbedWithLocalData(
             location,
@@ -327,10 +327,10 @@ export default class StatusCommand extends CommandBase {
       send(this.client, { embeds: [embed] }).then(({ toSendSize, sended }) => {
         (graphChannel as TextChannel).send(`${sended}/${toSendSize}`);
       });
-      return msg.channel.send({ embeds: [await makeEmbedWithData(data, url)] });
+      return msg.respond({ embeds: [await makeEmbedWithData(data, url)] });
     }
 
-    return msg.channel.send({
+    return msg.respond({
       embeds: [await makeEmbedWithData(data, graph.url)],
     });
   };
