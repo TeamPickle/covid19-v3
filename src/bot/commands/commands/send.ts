@@ -80,7 +80,7 @@ export default class SendCommand extends CommandBase {
 
     const embed = new MessageEmbed();
     embed
-      .setTitle(`${mode.emoji} ${mode}`)
+      .setTitle(`${mode.emoji} ${modeString}`)
       .setColor(mode.color)
       .setDescription(content);
 
