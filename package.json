@@ -44,7 +44,7 @@
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
     "jsdom": "^18.0.1",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "mongoose": "^5.11.10",
     "morgan": "^1.10.0",
     "node-cron": "^2.0.3",
